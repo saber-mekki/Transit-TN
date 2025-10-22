@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Use a named import for the TransportType enum
-// Using a package import and destructuring to resolve module resolution issues.
-import PrismaClientPackage from '@prisma/client';
-const { TransportType } = PrismaClientPackage;
+// FIX: Changed import to '.prisma/client' to resolve module export errors.
+import { TransportType } from '.prisma/client';
 
 
 export const router = Router();
@@ -53,7 +51,6 @@ router.post('/', async (req, res) => {
         }
         
         let newTrip;
-        // FIX: Use the imported TransportType enum
         const tripType = type.toUpperCase() as TransportType;
 
         if (tripType === TransportType.LOUAGE) {

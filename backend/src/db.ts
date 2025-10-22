@@ -1,7 +1,5 @@
-// FIX: Use a named import for PrismaClient
-// Using a package import and destructuring to resolve module resolution issues.
-import PrismaClientPackage from '@prisma/client';
-const { PrismaClient } = PrismaClientPackage;
+// FIX: Changed import to '.prisma/client' to resolve module export errors.
+import { PrismaClient } from '.prisma/client';
 
 const prisma = new PrismaClient();
 

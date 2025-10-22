@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Use a named import for the UserRole enum
-// Using a package import and destructuring to resolve module resolution issues.
-import PrismaClientPackage from '@prisma/client';
-const { UserRole } = PrismaClientPackage;
+// FIX: Changed import to '.prisma/client' to resolve module export errors.
+import { UserRole } from '.prisma/client';
 
 
 export const router = Router();
@@ -31,7 +29,6 @@ router.post('/signup', async (req, res) => {
                 username,
                 password, // HASH THIS
                 displayName,
-                // FIX: Use the imported UserRole enum
                 role: role as UserRole,
             },
         });
