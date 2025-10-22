@@ -12,8 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-// FIX: Removed empty object from express.json() call to fix type overload issue.
-app.use(express.json());
+// FIX: Pass an empty object to express.json() to resolve type overload issue.
+app.use(express.json({}));
 
 // API Routes
 app.use('/api/trips', tripRoutes);

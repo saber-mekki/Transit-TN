@@ -3,47 +3,76 @@ import { tunisianGovernorates } from './locations';
 
 export const stations: { [key: string]: Station } = {
   // === Tunis & Greater Tunis ===
-  tunisBebSaadoun: { id: 'tbs', name: 'Beb Saadoun (Nord)', city: 'Tunis', location: { lat: 36.804, lng: 10.163 } },
-  tunisMoncefBey: { id: 'tmb', name: 'Moncef Bey (Sud)', city: 'Tunis', location: { lat: 36.792, lng: 10.183 } },
-  arianaLouage: { id: 'arl', name: 'Station Louage Ariana', city: 'Ariana Ville', location: { lat: 36.862, lng: 10.195 } },
-  benArousLouage: { id: 'bal', name: 'Station Louage Ben Arous', city: 'Ben Arous', location: { lat: 36.750, lng: 10.229 } },
-  manoubaLouage: { id: 'mnl', name: 'Station Louage Manouba', city: 'Manouba', location: { lat: 36.812, lng: 10.098 } },
+  // FIX: Flatten location property to match Station type
+  tunisBebSaadoun: { id: 'tbs', name: 'Beb Saadoun (Nord)', city: 'Tunis', lat: 36.804, lng: 10.163 },
+  // FIX: Flatten location property to match Station type
+  tunisMoncefBey: { id: 'tmb', name: 'Moncef Bey (Sud)', city: 'Tunis', lat: 36.792, lng: 10.183 },
+  // FIX: Flatten location property to match Station type
+  arianaLouage: { id: 'arl', name: 'Station Louage Ariana', city: 'Ariana Ville', lat: 36.862, lng: 10.195 },
+  // FIX: Flatten location property to match Station type
+  benArousLouage: { id: 'bal', name: 'Station Louage Ben Arous', city: 'Ben Arous', lat: 36.750, lng: 10.229 },
+  // FIX: Flatten location property to match Station type
+  manoubaLouage: { id: 'mnl', name: 'Station Louage Manouba', city: 'Manouba', lat: 36.812, lng: 10.098 },
 
   // === North-East (Cap Bon) ===
-  nabeulLouage: { id: 'nl', name: 'Station Louage Nabeul', city: 'Nabeul', location: { lat: 36.456, lng: 10.734 } },
-  zaghouanLouage: { id: 'zgl', name: 'Station Louage Zaghouan', city: 'Zaghouan', location: { lat: 36.405, lng: 10.144 } },
+  // FIX: Flatten location property to match Station type
+  nabeulLouage: { id: 'nl', name: 'Station Louage Nabeul', city: 'Nabeul', lat: 36.456, lng: 10.734 },
+  // FIX: Flatten location property to match Station type
+  zaghouanLouage: { id: 'zgl', name: 'Station Louage Zaghouan', city: 'Zaghouan', lat: 36.405, lng: 10.144 },
   
   // === North-West ===
-  bejaLouage: { id: 'bjl', name: 'Station Louage Béja', city: 'Béja', location: { lat: 36.728, lng: 9.185 } },
-  bizerteLouage: { id: 'bzl', name: 'Station Louage Bizerte', city: 'Bizerte', location: { lat: 37.270, lng: 9.863 } },
-  jendoubaLouage: { id: 'jnl', name: 'Station Louage Jendouba', city: 'Jendouba', location: { lat: 36.502, lng: 8.781 } },
-  kefLouage: { id: 'kfl', name: 'Station Louage Le Kef', city: 'Le Kef', location: { lat: 36.175, lng: 8.711 } },
-  silianaLouage: { id: 'sil', name: 'Station Louage Siliana', city: 'Siliana', location: { lat: 36.084, lng: 9.372 } },
+  // FIX: Flatten location property to match Station type
+  bejaLouage: { id: 'bjl', name: 'Station Louage Béja', city: 'Béja', lat: 36.728, lng: 9.185 },
+  // FIX: Flatten location property to match Station type
+  bizerteLouage: { id: 'bzl', name: 'Station Louage Bizerte', city: 'Bizerte', lat: 37.270, lng: 9.863 },
+  // FIX: Flatten location property to match Station type
+  jendoubaLouage: { id: 'jnl', name: 'Station Louage Jendouba', city: 'Jendouba', lat: 36.502, lng: 8.781 },
+  // FIX: Flatten location property to match Station type
+  kefLouage: { id: 'kfl', name: 'Station Louage Le Kef', city: 'Le Kef', lat: 36.175, lng: 8.711 },
+  // FIX: Flatten location property to match Station type
+  silianaLouage: { id: 'sil', name: 'Station Louage Siliana', city: 'Siliana', lat: 36.084, lng: 9.372 },
   
   // === Center (Sahel) ===
-  sousseLouage: { id: 'sl', name: 'Station Louage Sousse', city: 'Sousse', location: { lat: 35.825, lng: 10.641 } },
-  monastirLouage: { id: 'mol', name: 'Station Louage Monastir', city: 'Monastir', location: { lat: 35.775, lng: 10.825 } },
-  mahdiaLouage: { id: 'mhl', name: 'Station Louage Mahdia', city: 'Mahdia', location: { lat: 35.503, lng: 11.061 } },
+  // FIX: Flatten location property to match Station type
+  sousseLouage: { id: 'sl', name: 'Station Louage Sousse', city: 'Sousse', lat: 35.825, lng: 10.641 },
+  // FIX: Flatten location property to match Station type
+  monastirLouage: { id: 'mol', name: 'Station Louage Monastir', city: 'Monastir', lat: 35.775, lng: 10.825 },
+  // FIX: Flatten location property to match Station type
+  mahdiaLouage: { id: 'mhl', name: 'Station Louage Mahdia', city: 'Mahdia', lat: 35.503, lng: 11.061 },
   
   // === Center (West) ===
-  kairouanLouage: { id: 'krl', name: 'Station Louage Kairouan', city: 'Kairouan', location: { lat: 35.674, lng: 10.101 } },
-  kasserineLouage: { id: 'ksl', name: 'Station Louage Kasserine', city: 'Kasserine', location: { lat: 35.168, lng: 8.835 } },
-  sidiBouzidLouage: { id: 'sbl', name: 'Station Louage Sidi Bouzid', city: 'Sidi Bouzid', location: { lat: 35.037, lng: 9.485 } },
+  // FIX: Flatten location property to match Station type
+  kairouanLouage: { id: 'krl', name: 'Station Louage Kairouan', city: 'Kairouan', lat: 35.674, lng: 10.101 },
+  // FIX: Flatten location property to match Station type
+  kasserineLouage: { id: 'ksl', name: 'Station Louage Kasserine', city: 'Kasserine', lat: 35.168, lng: 8.835 },
+  // FIX: Flatten location property to match Station type
+  sidiBouzidLouage: { id: 'sbl', name: 'Station Louage Sidi Bouzid', city: 'Sidi Bouzid', lat: 35.037, lng: 9.485 },
 
   // === South-East ===
-  sfaxLouage: { id: 'sfl', name: 'Sidi Mansour', city: 'Sfax', location: { lat: 34.739, lng: 10.759 } },
-  gabesLouage: { id: 'gl', name: 'Station Louage Gabès', city: 'Gabès', location: { lat: 33.881, lng: 10.098 } },
-  medenineLouage: { id: 'ml', name: 'Station Louage Medenine', city: 'Medenine', location: { lat: 33.355, lng: 10.505 } },
-  tataouineLouage: { id: 'ttl', name: 'Station Louage Tataouine', city: 'Tataouine', location: { lat: 32.929, lng: 10.451 } },
+  // FIX: Flatten location property to match Station type
+  sfaxLouage: { id: 'sfl', name: 'Sidi Mansour', city: 'Sfax', lat: 34.739, lng: 10.759 },
+  // FIX: Flatten location property to match Station type
+  gabesLouage: { id: 'gl', name: 'Station Louage Gabès', city: 'Gabès', lat: 33.881, lng: 10.098 },
+  // FIX: Flatten location property to match Station type
+  medenineLouage: { id: 'ml', name: 'Station Louage Medenine', city: 'Medenine', lat: 33.355, lng: 10.505 },
+  // FIX: Flatten location property to match Station type
+  tataouineLouage: { id: 'ttl', name: 'Station Louage Tataouine', city: 'Tataouine', lat: 32.929, lng: 10.451 },
 
   // === South-West ===
-  gafsaLouage: { id: 'gfl', name: 'Station Louage Gafsa', city: 'Gafsa', location: { lat: 34.425, lng: 8.785 } },
-  tozeurLouage: { id: 'tl', name: 'Station Louage Tozeur', city: 'Tozeur', location: { lat: 33.918, lng: 8.133 } },
-  kebiliLouage: { id: 'kl', name: 'Station Louage Kébili', city: 'Kébili', location: { lat: 33.705, lng: 8.968 } },
-  soukLahadLouage: { id: 'sll', name: 'Station Louage Souk Lahad', city: 'Souk Lahad', location: { lat: 33.771, lng: 8.878 } },
-  douzLouage: { id: 'dl', name: 'Station Louage Douz', city: 'Douz', location: { lat: 33.456, lng: 9.023 } },
-  faouarLouage: { id: 'fl', name: 'Station Louage El Faouar', city: 'El Faouar', location: { lat: 33.435, lng: 8.761 } },
-  rjimMaatougLouage: { id: 'rml', name: 'Station Rjim Maatoug', city: 'Rjim Maatoug', location: { lat: 33.568, lng: 8.188 } },
+  // FIX: Flatten location property to match Station type
+  gafsaLouage: { id: 'gfl', name: 'Station Louage Gafsa', city: 'Gafsa', lat: 34.425, lng: 8.785 },
+  // FIX: Flatten location property to match Station type
+  tozeurLouage: { id: 'tl', name: 'Station Louage Tozeur', city: 'Tozeur', lat: 33.918, lng: 8.133 },
+  // FIX: Flatten location property to match Station type
+  kebiliLouage: { id: 'kl', name: 'Station Louage Kébili', city: 'Kébili', lat: 33.705, lng: 8.968 },
+  // FIX: Flatten location property to match Station type
+  soukLahadLouage: { id: 'sll', name: 'Station Louage Souk Lahad', city: 'Souk Lahad', lat: 33.771, lng: 8.878 },
+  // FIX: Flatten location property to match Station type
+  douzLouage: { id: 'dl', name: 'Station Louage Douz', city: 'Douz', lat: 33.456, lng: 9.023 },
+  // FIX: Flatten location property to match Station type
+  faouarLouage: { id: 'fl', name: 'Station Louage El Faouar', city: 'El Faouar', lat: 33.435, lng: 8.761 },
+  // FIX: Flatten location property to match Station type
+  rjimMaatougLouage: { id: 'rml', name: 'Station Rjim Maatoug', city: 'Rjim Maatoug', lat: 33.568, lng: 8.188 },
 };
 
 export const mockTrips: Trip[] = [

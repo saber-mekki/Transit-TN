@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import prisma from '../db';
 // FIX: Use a named import for the TransportType enum
-import { TransportType } from '@prisma/client';
+// Using a package import and destructuring to resolve module resolution issues.
+import PrismaClientPackage from '@prisma/client';
+const { TransportType } = PrismaClientPackage;
+
 
 export const router = Router();
 

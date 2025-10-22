@@ -430,14 +430,6 @@ const MainContent: React.FC = () => {
         return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">{t('noResults')}</p>;
     };
 
-    if (isLoading) {
-        return <div className="p-4 md:p-6 text-center text-gray-500 dark:text-gray-400">Loading...</div>;
-    }
-    
-    if (error && !currentUser) { // Only block rendering if critical data fails on public view
-        return <div className="p-4 md:p-6 text-center text-red-500">{error}</div>;
-    }
-
     return (
         <main className="p-4 md:p-6">
             {currentUser?.role === UserRole.OPERATOR ? (

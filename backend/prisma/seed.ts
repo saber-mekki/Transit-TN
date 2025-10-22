@@ -1,5 +1,7 @@
 // FIX: Use named imports from '@prisma/client'
-import { PrismaClient, UserRole, TransportType } from '@prisma/client';
+// Using a package import and destructuring to resolve module resolution issues.
+import PrismaClientPackage from '@prisma/client';
+const { PrismaClient, UserRole, TransportType } = PrismaClientPackage;
 
 const prisma = new PrismaClient();
 
