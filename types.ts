@@ -15,10 +15,9 @@ export interface Station {
   id: string;
   name: string;
   city: string;
-  location: {
-    lat: number;
-    lng: number;
-  };
+  // FIX: Flatten location to match backend data structure
+  lat: number;
+  lng: number;
 }
 
 export interface BaseTrip {
@@ -35,7 +34,6 @@ export interface BaseTrip {
 export interface LouageTrip extends BaseTrip {
   type: TransportType.LOUAGE;
   station?: Station;
-  // FIX: Add stationId to match backend data structure
   stationId?: string | null;
   customStationName?: string;
   price: number;
@@ -49,10 +47,8 @@ export interface LouageTrip extends BaseTrip {
 export interface BusTrip extends BaseTrip {
   type: TransportType.BUS;
   departureStation?: Station;
-  // FIX: Add departureStationId to match backend data structure
   departureStationId?: string | null;
   arrivalStation?: Station;
-  // FIX: Add arrivalStationId to match backend data structure
   arrivalStationId?: string | null;
   customDepartureStationName?: string;
   customArrivalStationName?: string;

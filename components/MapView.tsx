@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-// FIX: Import the `Station` type to correctly type station objects.
 import type { Trip, Station } from '../types';
 import { TransportType } from '../types';
 import { useAppContext } from '../contexts/AppContext';
@@ -13,38 +12,46 @@ export const MapView: React.FC<MapViewProps> = ({ trip }) => {
 
   const mapUrl = useMemo(() => {
     const locations: { lat: number; lng: number }[] = [];
-    // FIX: Explicitly type `allStations` to ensure correct type inference for array elements.
     const allStations: Station[] = Object.values(stations);
 
     switch (trip.type) {
       case TransportType.LOUAGE:
-        if (trip.station?.location) {
-          locations.push(trip.station.location);
+        // FIX: Use flat lat/lng from station object
+        if (trip.station?.lat && trip.station?.lng) {
+          locations.push({ lat: trip.station.lat, lng: trip.station.lng });
         } else {
           const fallbackStation = allStations.find(s => s.city === trip.fromCity);
-          if (fallbackStation) locations.push(fallbackStation.location);
+          // FIX: Use flat lat/lng from station object
+          if (fallbackStation) locations.push({ lat: fallbackStation.lat, lng: fallbackStation.lng });
         }
         break;
       case TransportType.BUS:
-        if (trip.departureStation?.location) {
-          locations.push(trip.departureStation.location);
+        // FIX: Use flat lat/lng from station object
+        if (trip.departureStation?.lat && trip.departureStation?.lng) {
+          locations.push({ lat: trip.departureStation.lat, lng: trip.departureStation.lng });
         } else {
           const fallbackStation = allStations.find(s => s.city === trip.fromCity);
-          if (fallbackStation) locations.push(fallbackStation.location);
+          // FIX: Use flat lat/lng from station object
+          if (fallbackStation) locations.push({ lat: fallbackStation.lat, lng: fallbackStation.lng });
         }
-        if (trip.arrivalStation?.location) {
-          locations.push(trip.arrivalStation.location);
+        // FIX: Use flat lat/lng from station object
+        if (trip.arrivalStation?.lat && trip.arrivalStation?.lng) {
+          locations.push({ lat: trip.arrivalStation.lat, lng: trip.arrivalStation.lng });
         } else {
            const fallbackStation = allStations.find(s => s.city === trip.toCity);
-           if (fallbackStation) locations.push(fallbackStation.location);
+           // FIX: Use flat lat/lng from station object
+           if (fallbackStation) locations.push({ lat: fallbackStation.lat, lng: fallbackStation.lng });
         }
         break;
       case TransportType.TRANSPORTER:
         const fromStation = allStations.find(s => s.city === trip.fromCity);
-        if (fromStation) locations.push(fromStation.location);
+        // FIX: Use flat lat/lng from station object
+        if (fromStation) locations.push({ lat: fromStation.lat, lng: fromStation.lng });
         
-        const toStation = allStations.find(s => trip.toCity.includes(s.city));
-        if (toStation) locations.push(toStation.location);
+        const toCityGuess = trip.toCity.split(',')[0];
+        const toStation = allStations.find(s => toCityGuess.includes(s.city));
+        // FIX: Use flat lat/lng from station object
+        if (toStation) locations.push({ lat: toStation.lat, lng: toStation.lng });
         break;
     }
 

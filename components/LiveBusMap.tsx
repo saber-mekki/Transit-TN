@@ -45,21 +45,24 @@ export const LiveBusMap: React.FC = () => {
         return map;
     }, [allStations]);
     
-    const getTripEndpoints = useCallback((trip: Trip) => {
+    const getTripEndpoints = useCallback((trip: Trip): { start: { lat: number, lng: number } | null, end: { lat: number, lng: number } | null } => {
+        // FIX: Correctly extract lat/lng from the flattened Station type.
+        const getStationCoords = (station: Station | undefined) => station ? { lat: station.lat, lng: station.lng } : null;
+
         let start: { lat: number, lng: number } | null = null;
         let end: { lat: number, lng: number } | null = null;
         
         switch(trip.type) {
             case TransportType.LOUAGE:
-                start = (trip as LouageTrip).station?.location ?? stationByCityMap.get(trip.fromCity)?.location ?? null;
-                end = stationByCityMap.get(trip.toCity)?.location ?? null;
+                start = getStationCoords((trip as LouageTrip).station) ?? getStationCoords(stationByCityMap.get(trip.fromCity));
+                end = getStationCoords(stationByCityMap.get(trip.toCity));
                 break;
             case TransportType.BUS:
-                start = (trip as BusTrip).departureStation?.location ?? stationByCityMap.get(trip.fromCity)?.location ?? null;
-                end = (trip as BusTrip).arrivalStation?.location ?? stationByCityMap.get(trip.toCity)?.location ?? null;
+                start = getStationCoords((trip as BusTrip).departureStation) ?? getStationCoords(stationByCityMap.get(trip.fromCity));
+                end = getStationCoords((trip as BusTrip).arrivalStation) ?? getStationCoords(stationByCityMap.get(trip.toCity));
                 break;
             case TransportType.TRANSPORTER:
-                start = stationByCityMap.get(trip.fromCity)?.location ?? null;
+                start = getStationCoords(stationByCityMap.get(trip.fromCity));
                 if (start) {
                     end = { lat: start.lat + 2.5, lng: start.lng + 1 };
                 }
@@ -78,9 +81,9 @@ export const LiveBusMap: React.FC = () => {
                 let path = [start];
                 if (trip.type === TransportType.TRANSPORTER && (trip as TransporterTrip).route) {
                     (trip as TransporterTrip).route?.forEach(city => {
-                        const point = stationByCityMap.get(city)?.location;
+                        const point = stationByCityMap.get(city);
                         if (point) {
-                            path.push(point);
+                            path.push({lat: point.lat, lng: point.lng});
                         }
                     });
                 }
