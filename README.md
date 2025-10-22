@@ -31,6 +31,7 @@ The project is organized into a monorepo with two main packages: `frontend` and 
 .
 ├── backend/              # Node.js backend server
 │   ├── prisma/
+│   │   ├── migrations/   # Database migration files
 │   │   ├── schema.prisma # Defines the database schema
 │   │   └── seed.ts       # Database seed script
 │   ├── src/              # Backend source code (routes, data, etc.)

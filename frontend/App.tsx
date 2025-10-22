@@ -375,8 +375,6 @@ const MainContent: React.FC = () => {
     };
 
     const renderResults = () => {
-        if (isLoading) return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p>;
-        if (error) return <p className="text-center text-red-500 mt-8">{error}</p>;
         if (!hasSearched) return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Please start a search to see trips.</p>;
         if (filteredResults.length > 0) return filteredResults.map(trip => <TripCard key={trip.id} trip={trip} onSelect={setSelectedTrip} />);
         return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">{t('noResults')}</p>;
@@ -387,6 +385,7 @@ const MainContent: React.FC = () => {
         if (currentUser?.role === UserRole.OPERATOR) {
             return <OperatorView />;
         }
+        
         return (
              <>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
@@ -405,7 +404,7 @@ const MainContent: React.FC = () => {
                        <LiveBusMap />
                     )}
                 </div>
-
+                
                 {activeTab !== 'live' && hasSearched && (
                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mt-6">
                         <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">{t('filters')}</h3>
@@ -431,7 +430,14 @@ const MainContent: React.FC = () => {
                     </div>
                 )}
 
-                {activeTab !== 'live' && <div className="mt-6">{renderResults()}</div>}
+                {activeTab !== 'live' && (
+                    <div className="mt-6">
+                        {isLoading ? <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p> 
+                         : error ? <p className="text-center text-red-500 mt-8">{error}</p> 
+                         : renderResults()
+                        }
+                    </div>
+                )}
                 
                 {selectedTrip && <TripDetailsModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />}
             </>
@@ -440,7 +446,7 @@ const MainContent: React.FC = () => {
 
     return (
         <main className="p-4 md:p-6">
-           {renderMainView()}
+           {isLoading && !error ? null : renderMainView()}
         </main>
     );
 }
