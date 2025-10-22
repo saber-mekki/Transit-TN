@@ -88,7 +88,7 @@ docker-compose up --build
 **What does this command do?**
 - `--build`: Forces Docker to rebuild the backend image. Use this the first time or after making changes to the backend code.
 - It starts the PostgreSQL database (`db`) and the backend server (`backend`).
-- The backend container will automatically wait for the database, apply migrations, seed the database with initial data, and start the server on port 3000.
+- The backend container will automatically wait for the database, apply migrations, and start the server on port 3000.
 
 The initial build may take a few minutes.
 

@@ -1,4 +1,4 @@
-import express from 'express';
+import express = require('express');
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { router as tripRoutes } from './routes/trips';
@@ -12,8 +12,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-// FIX: Pass an empty object to express.json() to resolve type overload issue.
-// UPDATED FIX: Calling express.json() without arguments to resolve type overload issue.
 app.use(express.json());
 
 // API Routes

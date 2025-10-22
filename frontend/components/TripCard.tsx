@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Trip, LouageTrip, BusTrip, TransporterTrip } from '../types';
 import { TransportType } from '../types';

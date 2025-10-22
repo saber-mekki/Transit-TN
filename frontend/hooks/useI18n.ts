@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { translations } from '../i18n/translations';

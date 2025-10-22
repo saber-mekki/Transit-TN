@@ -41,7 +41,6 @@ export const MapView: React.FC<MapViewProps> = ({ trip }) => {
         const fromStation = allStations.find(s => s.city === trip.fromCity);
         if (fromStation) locations.push({ lat: fromStation.lat, lng: fromStation.lng });
         
-        // This is a simple fallback for international trips, might not be accurate
         const toCityGuess = trip.toCity.split(',')[0];
         const toStation = allStations.find(s => toCityGuess.includes(s.city));
         if (toStation) locations.push({ lat: toStation.lat, lng: toStation.lng });

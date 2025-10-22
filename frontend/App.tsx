@@ -380,9 +380,16 @@ const MainContent: React.FC = () => {
         return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">{t('noResults')}</p>;
     };
     
-    // Main View selector
     const renderMainView = () => {
-        if (currentUser?.role === UserRole.OPERATOR) {
+        if (isLoading) {
+            return null; // Don't render main content while loading, splash screen is visible
+        }
+
+        if (error && !currentUser) { // Only block rendering if there's a critical error and no user view
+            return <div className="p-4 md:p-6"><p className="text-center text-red-500 mt-8">{error}</p></div>;
+        }
+
+        if (currentUser?.role.toUpperCase() === UserRole.OPERATOR.toUpperCase()) {
             return <OperatorView />;
         }
         
@@ -432,10 +439,7 @@ const MainContent: React.FC = () => {
 
                 {activeTab !== 'live' && (
                     <div className="mt-6">
-                        {isLoading ? <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p> 
-                         : error ? <p className="text-center text-red-500 mt-8">{error}</p> 
-                         : renderResults()
-                        }
+                        {error ? <p className="text-center text-red-500 mt-8">{error}</p> : renderResults()}
                     </div>
                 )}
                 
@@ -446,10 +450,11 @@ const MainContent: React.FC = () => {
 
     return (
         <main className="p-4 md:p-6">
-           {isLoading && !error ? null : renderMainView()}
+           {renderMainView()}
         </main>
     );
 }
+
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);

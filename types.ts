@@ -1,4 +1,3 @@
-
 export enum TransportType {
   LOUAGE = 'louage',
   BUS = 'bus',
@@ -15,7 +14,6 @@ export interface Station {
   id: string;
   name: string;
   city: string;
-  // FIX: Flatten location to match backend data structure
   lat: number;
   lng: number;
 }

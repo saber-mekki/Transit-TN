@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import prisma from '../db';
-import { Prisma } from '@prisma/client';
-
+import * as Prisma from '@prisma/client';
+import type { Trip } from '../../../types'; // Using frontend type for mapping
 
 export const router = Router();
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
         });
 
         // Flatten the data to match the frontend type structure
-        const formattedTrips = trips.map(trip => {
+        const formattedTrips = trips.map((trip: any) => {
             let specificTripData = {};
             if (trip.type === 'LOUAGE' && trip.louageTrip) {
                 specificTripData = { ...trip.louageTrip };
