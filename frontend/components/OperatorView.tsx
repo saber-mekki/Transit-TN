@@ -13,7 +13,7 @@ export const OperatorView: React.FC = () => {
     const [tripToEdit, setTripToEdit] = useState<Trip | null>(null);
 
     if (!currentUser) {
-        return null; // Should not happen if logic in App.tsx is correct
+        return null; 
     }
 
     const operatorTrips = trips.filter(trip => trip.operatorId === currentUser.id);
@@ -42,22 +42,13 @@ export const OperatorView: React.FC = () => {
         switch (trip.type) {
             case TransportType.LOUAGE:
                 const louage = trip as LouageTrip;
-                return {
-                    label: t('station'),
-                    value: louage.customStationName || louage.station?.name || 'N/A'
-                };
+                return { label: t('station'), value: louage.customStationName || louage.station?.name || 'N/A' };
             case TransportType.BUS:
                  const bus = trip as BusTrip;
-                 return {
-                     label: t('departure'),
-                     value: bus.customDepartureStationName || bus.departureStation?.name || 'N/A'
-                 };
+                 return { label: t('departure'), value: bus.customDepartureStationName || bus.departureStation?.name || 'N/A' };
             case TransportType.TRANSPORTER:
                  const transporter = trip as TransporterTrip;
-                 return {
-                     label: 'Vehicle Type',
-                     value: transporter.vehicleType
-                 };
+                 return { label: 'Vehicle Type', value: transporter.vehicleType };
             default:
                 return null;
         }
@@ -92,7 +83,6 @@ export const OperatorView: React.FC = () => {
             const keyDetails = getTripKeyDetails(trip);
             return (
                 <div key={trip.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700 overflow-hidden transition-shadow hover:shadow-lg">
-                    {/* Card Header */}
                     <div className="p-4 border-b dark:border-gray-600 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
                         <div className="flex items-center space-x-3 rtl:space-x-reverse">
                             <BusIcon type={trip.type} className="w-6 h-6 text-indigo-500" />
@@ -107,7 +97,6 @@ export const OperatorView: React.FC = () => {
                         </button>
                     </div>
                     
-                    {/* Card Body */}
                     <div className="p-4">
                         <p className="font-bold text-xl text-gray-900 dark:text-gray-100">{trip.fromCity} → {trip.toCity}</p>
                         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center">
@@ -123,7 +112,6 @@ export const OperatorView: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Card Footer (for actions) */}
                     {(trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS) && (
                         <div className="p-4 bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-600">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('availableSeatsLabel')}</label>
@@ -139,12 +127,7 @@ export const OperatorView: React.FC = () => {
                                 {trip.type === TransportType.LOUAGE && (
                                     <button
                                         onClick={() => handleUpdateSeats(trip as LouageTrip, { isFull: !(trip as LouageTrip).isFull, availableSeats: (trip as LouageTrip).isFull ? (trip as LouageTrip).totalSeats : 0 })}
-                                        className={`px-4 py-2 rounded-md text-sm font-semibold text-white transition-colors w-40 text-center ${
-                                            (trip as LouageTrip).isFull 
-                                            ? 'bg-green-500 hover:bg-green-600' 
-                                            : 'bg-red-500 hover:bg-red-600'
-                                        }`}
-                                    >
+                                        className={`px-4 py-2 rounded-md text-sm font-semibold text-white transition-colors w-40 text-center ${ (trip as LouageTrip).isFull ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600' }`}>
                                         {(trip as LouageTrip).isFull ? t('markAsAvailable') : t('markAsFull')}
                                     </button>
                                 )}

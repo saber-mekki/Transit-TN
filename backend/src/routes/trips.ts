@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Changed import to '.prisma/client' to resolve module export errors.
-import { TransportType } from '.prisma/client';
+import * as PrismaTypes from '@prisma/client';
 
 
 export const router = Router();
@@ -51,31 +50,31 @@ router.post('/', async (req, res) => {
         }
         
         let newTrip;
-        const tripType = type.toUpperCase() as TransportType;
+        const tripType = type.toUpperCase() as PrismaTypes.TransportType;
 
-        if (tripType === TransportType.LOUAGE) {
+        if (tripType === PrismaTypes.TransportType.LOUAGE) {
             const { price, totalSeats, stationId, customStationName, vehicleNumber, contactInfo } = tripData;
             newTrip = await prisma.trip.create({
                 data: {
-                    type: TransportType.LOUAGE, operatorId, operatorName: operator.displayName, fromCity: tripData.fromCity, toCity: tripData.toCity,
+                    type: PrismaTypes.TransportType.LOUAGE, operatorId, operatorName: operator.displayName, fromCity: tripData.fromCity, toCity: tripData.toCity,
                     departureTime: tripData.departureTime, arrivalTime: tripData.arrivalTime,
                     louageTrip: { create: { price, totalSeats, availableSeats: totalSeats, isFull: false, stationId, customStationName, vehicleNumber, contactInfo } }
                 }
             });
-        } else if (tripType === TransportType.BUS) {
+        } else if (tripType === PrismaTypes.TransportType.BUS) {
             const { price, totalSeats, departureStationId, arrivalStationId, customDepartureStationName, customArrivalStationName } = tripData;
             newTrip = await prisma.trip.create({
                 data: {
-                    type: TransportType.BUS, operatorId, operatorName: operator.displayName, fromCity: tripData.fromCity, toCity: tripData.toCity,
+                    type: PrismaTypes.TransportType.BUS, operatorId, operatorName: operator.displayName, fromCity: tripData.fromCity, toCity: tripData.toCity,
                     departureTime: tripData.departureTime, arrivalTime: tripData.arrivalTime,
                     busTrip: { create: { price, totalSeats, availableSeats: totalSeats, departureStationId, arrivalStationId, customDepartureStationName, customArrivalStationName } }
                 }
             });
-        } else if (tripType === TransportType.TRANSPORTER) {
+        } else if (tripType === PrismaTypes.TransportType.TRANSPORTER) {
              const { contactInfo, vehicleType, availableSpace, eta, route } = tripData;
              newTrip = await prisma.trip.create({
                  data: {
-                    type: TransportType.TRANSPORTER, operatorId, operatorName: operator.displayName, fromCity: tripData.fromCity, toCity: tripData.toCity,
+                    type: PrismaTypes.TransportType.TRANSPORTER, operatorId, operatorName: operator.displayName, fromCity: tripData.fromCity, toCity: tripData.toCity,
                     departureTime: tripData.departureTime, arrivalTime: tripData.arrivalTime,
                     transporterTrip: { create: { contactInfo, vehicleType, availableSpace, eta, route } }
                  }
@@ -100,21 +99,21 @@ router.put('/:id', async (req, res) => {
         let updatedTrip;
         const tripType = type.toLowerCase();
 
-        if (tripType === TransportType.LOUAGE.toLowerCase()) {
+        if (tripType === PrismaTypes.TransportType.LOUAGE.toLowerCase()) {
             const { price, totalSeats, availableSeats, isFull, stationId, customStationName, vehicleNumber, contactInfo, ...commonUpdates } = updates;
             delete commonUpdates.louageTrip; // Remove nested object from common updates
             updatedTrip = await prisma.trip.update({
                 where: { id },
                 data: { ...commonUpdates, louageTrip: { update: { price, totalSeats, availableSeats, isFull, stationId, customStationName, vehicleNumber, contactInfo } } },
             });
-        } else if (tripType === TransportType.BUS.toLowerCase()) {
+        } else if (tripType === PrismaTypes.TransportType.BUS.toLowerCase()) {
             const { price, totalSeats, availableSeats, departureStationId, arrivalStationId, customDepartureStationName, customArrivalStationName, ...commonUpdates } = updates;
             delete commonUpdates.busTrip;
             updatedTrip = await prisma.trip.update({
                 where: { id },
                 data: { ...commonUpdates, busTrip: { update: { price, totalSeats, availableSeats, departureStationId, arrivalStationId, customDepartureStationName, customArrivalStationName } } },
             });
-        } else if (tripType === TransportType.TRANSPORTER.toLowerCase()) {
+        } else if (tripType === PrismaTypes.TransportType.TRANSPORTER.toLowerCase()) {
             const { contactInfo, vehicleType, availableSpace, eta, route, ...commonUpdates } = updates;
             delete commonUpdates.transporterTrip;
             updatedTrip = await prisma.trip.update({

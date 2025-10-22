@@ -1,6 +1,5 @@
-// FIX: Changed import to '.prisma/client' to resolve module export errors.
-import { PrismaClient } from '.prisma/client';
+import * as PrismaTypes from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaTypes.PrismaClient();
 
 export default prisma;

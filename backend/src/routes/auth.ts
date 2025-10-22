@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Changed import to '.prisma/client' to resolve module export errors.
-import { UserRole } from '.prisma/client';
+import * as PrismaTypes from '@prisma/client';
 
 
 export const router = Router();
@@ -29,7 +28,7 @@ router.post('/signup', async (req, res) => {
                 username,
                 password, // HASH THIS
                 displayName,
-                role: role as UserRole,
+                role: role as PrismaTypes.UserRole,
             },
         });
         

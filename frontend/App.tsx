@@ -193,7 +193,6 @@ const MainContent: React.FC = () => {
     }, [toGovernorate, tunisianGovernorates]);
     
     useEffect(() => {
-        // Clear location state when changing tabs
         setFromGovernorate('');
         setFromDelegation('');
         setToGovernorate('');
@@ -206,6 +205,8 @@ const MainContent: React.FC = () => {
 
     const handleSearch = () => {
         setHasSearched(true);
+        if (isLoading) return;
+
         const results = trips.filter(trip => {
             if (activeTab === 'live') return false;
 
@@ -214,9 +215,7 @@ const MainContent: React.FC = () => {
 
             if (activeTab === TransportType.TRANSPORTER) {
                 if (!transporterLocA && !transporterLocB) return true;
-
                 const isGovernorate = (loc: string) => tunisianGovernorates.some(g => g.name === loc);
-
                 const tripFrom = trip.fromCity;
                 const tripTo = trip.toCity;
 
@@ -231,35 +230,26 @@ const MainContent: React.FC = () => {
                 const toMatchesB = locBIsCountry && tripTo.toLowerCase().includes(transporterLocB.toLowerCase());
 
                 if (transporterLocA && transporterLocB) {
-                    // Both fields are filled, check both directions
                     return (fromMatchesA && toMatchesB) || (fromMatchesB && toMatchesA);
                 } else if (transporterLocA) {
-                    // Only From is filled
                     return fromMatchesA || toMatchesA;
                 } else if (transporterLocB) {
-                    // Only To is filled
                     return fromMatchesB || toMatchesB;
                 }
                 return true;
             } else { // Louage or Bus
                 let fromMatch = true;
                 if (fromGovernorate) {
-                    if (fromDelegation) {
-                        fromMatch = trip.fromCity === fromDelegation;
-                    } else {
-                        const delegations = governorateMap.get(fromGovernorate);
-                        fromMatch = delegations ? delegations.includes(trip.fromCity) : false;
-                    }
+                    fromMatch = fromDelegation 
+                        ? trip.fromCity === fromDelegation 
+                        : (governorateMap.get(fromGovernorate) || []).includes(trip.fromCity);
                 }
 
                 let toMatch = true;
                 if (toGovernorate) {
-                    if (toDelegation) {
-                        toMatch = trip.toCity === toDelegation;
-                    } else {
-                        const delegations = governorateMap.get(toGovernorate);
-                        toMatch = delegations ? delegations.includes(trip.toCity) : false;
-                    }
+                    toMatch = toDelegation
+                        ? trip.toCity === toDelegation
+                        : (governorateMap.get(toGovernorate) || []).includes(trip.toCity);
                 }
                 
                 return fromMatch && toMatch;
@@ -270,20 +260,18 @@ const MainContent: React.FC = () => {
 
     const filteredResults = useMemo(() => {
         return searchResults.filter(trip => {
-            if (maxPrice && (trip.type.toLowerCase() === TransportType.LOUAGE || trip.type.toLowerCase() === TransportType.BUS)) {
-                if ('price' in trip && (trip as any).price > Number(maxPrice)) return false;
+            if (maxPrice && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
+                if ('price' in trip && trip.price > Number(maxPrice)) return false;
             }
             if (departAfter) {
                 const tripTime = new Date(trip.departureTime);
                 const [hours, minutes] = departAfter.split(':').map(Number);
-                const tripHours = tripTime.getHours();
-                const tripMinutes = tripTime.getMinutes();
-                if (tripHours < hours || (tripHours === hours && tripMinutes < minutes)) {
+                if (tripTime.getHours() < hours || (tripTime.getHours() === hours && tripTime.getMinutes() < minutes)) {
                     return false;
                 }
             }
-            if (minSeats && (trip.type.toLowerCase() === TransportType.LOUAGE || trip.type.toLowerCase() === TransportType.BUS)) {
-                if ('availableSeats' in trip && (trip as any).availableSeats < Number(minSeats)) return false;
+            if (minSeats && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
+                if ('availableSeats' in trip && trip.availableSeats < Number(minSeats)) return false;
             }
             return true;
         });
@@ -307,62 +295,46 @@ const MainContent: React.FC = () => {
         }
     };
 
-    const TabButton = ({ type, label, icon }: { type: TransportType | 'live'; label: string; icon: string; }) => {
-        const isActive = activeTab === type;
-        return (
-            <button
-                onClick={() => setActiveTab(type)}
-                className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-indigo-500
-                    ${
-                        isActive
-                            ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg'
-                            : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-gray-600'
-                    }
-                `}
-            >
-                <i className={`fas ${icon} text-2xl mb-2 ${isActive ? 'text-white' : 'text-indigo-500 dark:text-indigo-400'}`}></i>
-                <span className={`text-xs font-bold uppercase tracking-wider ${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{label}</span>
-            </button>
-        );
-    };
+    const TabButton = ({ type, label, icon }: { type: TransportType | 'live'; label: string; icon: string; }) => (
+        <button
+            onClick={() => setActiveTab(type)}
+            className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-indigo-500 ${activeTab === type ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-gray-600'}`}>
+            <i className={`fas ${icon} text-2xl mb-2 ${activeTab === type ? 'text-white' : 'text-indigo-500 dark:text-indigo-400'}`}></i>
+            <span className={`text-xs font-bold uppercase tracking-wider ${activeTab === type ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{label}</span>
+        </button>
+    );
 
     const renderSearchForm = () => {
+         const locationOptions = (
+            <>
+                <option value="">{t('country')} / {t('governorate')}</option>
+                <optgroup label={t('governorate')}>
+                    {tunisianGovernorates.map(g => <option key={g.name} value={g.name}>{g.name}</option>)}
+                </optgroup>
+                <optgroup label={t('country')}>
+                    {countries.map(c => <option key={c} value={c}>{c}</option>)}
+                </optgroup>
+            </>
+        );
+
         if (activeTab === TransportType.TRANSPORTER) {
-             const locationOptions = (
-                <>
-                    <option value="">{t('country')} / {t('governorate')}</option>
-                    <optgroup label={t('governorate')}>
-                        {tunisianGovernorates.map(g => <option key={g.name} value={g.name}>{g.name}</option>)}
-                    </optgroup>
-                    <optgroup label={t('country')}>
-                        {countries.map(c => <option key={c} value={c}>{c}</option>)}
-                    </optgroup>
-                </>
-            );
             return (
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('from')}</label>
-                        <select value={transporterLocA} onChange={e => setTransporterLocA(e.target.value)} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1">
-                           {locationOptions}
-                        </select>
+                        <select value={transporterLocA} onChange={e => setTransporterLocA(e.target.value)} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1">{locationOptions}</select>
                     </div>
                      <div className="flex justify-center items-center">
-                        <button onClick={handleSwap} title={t('swapLocations')} className="p-3 bg-gray-200 dark:bg-gray-600 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-500 transition-colors">
-                            <i className="fas fa-exchange-alt text-gray-600 dark:text-gray-200"></i>
-                        </button>
+                        <button onClick={handleSwap} title={t('swapLocations')} className="p-3 bg-gray-200 dark:bg-gray-600 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-500 transition-colors"><i className="fas fa-exchange-alt text-gray-600 dark:text-gray-200"></i></button>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('to')}</label>
-                        <select value={transporterLocB} onChange={e => setTransporterLocB(e.target.value)} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1">
-                             {locationOptions}
-                        </select>
+                        <select value={transporterLocB} onChange={e => setTransporterLocB(e.target.value)} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1">{locationOptions}</select>
                     </div>
                 </div>
             );
         }
 
-        // Louage & Bus search form
         return (
             <div className="grid md:grid-cols-5 gap-4 mb-4 items-end">
                 <div className="md:col-span-2 grid grid-cols-2 gap-2">
@@ -381,13 +353,7 @@ const MainContent: React.FC = () => {
                         </select>
                     </div>
                 </div>
-
-                <div className="flex justify-center items-center">
-                    <button onClick={handleSwap} title={t('swapLocations')} className="p-3 bg-gray-200 dark:bg-gray-600 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-500 transition-colors">
-                        <i className="fas fa-exchange-alt text-gray-600 dark:text-gray-200"></i>
-                    </button>
-                </div>
-                
+                <div className="flex justify-center items-center"><button onClick={handleSwap} title={t('swapLocations')} className="p-3 bg-gray-200 dark:bg-gray-600 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-500 transition-colors"><i className="fas fa-exchange-alt text-gray-600 dark:text-gray-200"></i></button></div>
                 <div className="md:col-span-2 grid grid-cols-2 gap-2">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('to')} ({t('governorate')})</label>
@@ -409,90 +375,72 @@ const MainContent: React.FC = () => {
     };
 
     const renderResults = () => {
-        if (isLoading) {
-            return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p>;
-        }
-
-        if (error) {
-            return <p className="text-center text-red-500 mt-8">{error}</p>;
-        }
-
-        if (!hasSearched) {
-            return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Please start a search to see trips.</p>;
-        }
-
-        if (filteredResults.length > 0) {
-            return filteredResults.map(trip => (
-                <TripCard key={trip.id} trip={trip} onSelect={setSelectedTrip} />
-            ));
-        }
-
+        if (isLoading) return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p>;
+        if (error) return <p className="text-center text-red-500 mt-8">{error}</p>;
+        if (!hasSearched) return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Please start a search to see trips.</p>;
+        if (filteredResults.length > 0) return filteredResults.map(trip => <TripCard key={trip.id} trip={trip} onSelect={setSelectedTrip} />);
         return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">{t('noResults')}</p>;
     };
+    
+    // Main View selector
+    const renderMainView = () => {
+        if (currentUser?.role === UserRole.OPERATOR) {
+            return <OperatorView />;
+        }
+        return (
+             <>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                    <div className="grid grid-cols-4 gap-4 mb-4">
+                        <TabButton type={TransportType.LOUAGE} label={t('louage')} icon="fa-car-side" />
+                        <TabButton type={TransportType.BUS} label={t('bus')} icon="fa-bus" />
+                        <TabButton type={TransportType.TRANSPORTER} label={t('transporter')} icon="fa-truck-moving" />
+                        <TabButton type={'live'} label={t('liveMap')} icon="fa-map-marked-alt" />
+                    </div>
+                    {activeTab !== 'live' ? (
+                        <>
+                            {renderSearchForm()}
+                            <button onClick={handleSearch} className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition-colors">{t('findTrips')}</button>
+                        </>
+                    ) : (
+                       <LiveBusMap />
+                    )}
+                </div>
+
+                {activeTab !== 'live' && hasSearched && (
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mt-6">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">{t('filters')}</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+                            {(activeTab === TransportType.LOUAGE || activeTab === TransportType.BUS) && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('maxPrice')}</label>
+                                    <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} placeholder="TND" className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" />
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('departAfter')}</label>
+                                <input type="time" value={departAfter} onChange={e => setDepartAfter(e.target.value)} className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" />
+                            </div>
+                            {(activeTab === TransportType.LOUAGE || activeTab === TransportType.BUS) && (
+                                 <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('minSeats')}</label>
+                                    <input type="number" value={minSeats} onChange={e => setMinSeats(e.target.value)} placeholder="1" className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" />
+                                </div>
+                            )}
+                            <button onClick={clearFilters} className="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">{t('clearFilters')}</button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab !== 'live' && <div className="mt-6">{renderResults()}</div>}
+                
+                {selectedTrip && <TripDetailsModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />}
+            </>
+        );
+    }
 
     return (
         <main className="p-4 md:p-6">
-            {currentUser?.role === UserRole.OPERATOR ? (
-                 <OperatorView />
-            ) : (
-                <>
-                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                        <div className="grid grid-cols-4 gap-4 mb-4">
-                            <TabButton type={TransportType.LOUAGE} label={t('louage')} icon="fa-car-side" />
-                            <TabButton type={TransportType.BUS} label={t('bus')} icon="fa-bus" />
-                            <TabButton type={TransportType.TRANSPORTER} label={t('transporter')} icon="fa-truck-moving" />
-                            <TabButton type={'live'} label={t('liveMap')} icon="fa-map-marked-alt" />
-                        </div>
-                        
-                        {activeTab !== 'live' ? (
-                            <>
-                                {renderSearchForm()}
-                                <button
-                                    onClick={handleSearch}
-                                    className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition-colors"
-                                >
-                                    {t('findTrips')}
-                                </button>
-                             </>
-                        ) : (
-                           <LiveBusMap />
-                        )}
-                    </div>
-
-                    {activeTab !== 'live' && hasSearched && (
-                        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mt-6">
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">{t('filters')}</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
-                                {(activeTab === TransportType.LOUAGE || activeTab === TransportType.BUS) && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('maxPrice')}</label>
-                                        <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} placeholder="TND" className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" />
-                                    </div>
-                                )}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('departAfter')}</label>
-                                    <input type="time" value={departAfter} onChange={e => setDepartAfter(e.target.value)} className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" />
-                                </div>
-                                {(activeTab === TransportType.LOUAGE || activeTab === TransportType.BUS) && (
-                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('minSeats')}</label>
-                                        <input type="number" value={minSeats} onChange={e => setMinSeats(e.target.value)} placeholder="1" className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" />
-                                    </div>
-                                )}
-                                <button onClick={clearFilters} className="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">{t('clearFilters')}</button>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab !== 'live' && (
-                         <div className="mt-6">
-                            {renderResults()}
-                        </div>
-                    )}
-                </>
-            )}
-
-            {selectedTrip && <TripDetailsModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />}
+           {renderMainView()}
         </main>
     );
 }
@@ -503,7 +451,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2500); // 2.5 seconds delay
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
