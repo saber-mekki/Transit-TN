@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { tunisianGovernorates, countries } from '../data/locations';
 
-const router = Router();
+export const router = Router();
 
 router.get('/', (req, res) => {
     res.json({
@@ -9,5 +9,3 @@ router.get('/', (req, res) => {
         countries
     });
 });
-
-export default router;

@@ -1,10 +1,8 @@
-
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Use a named import for the UserRole enum.
 import * as Prisma from '@prisma/client';
 
-const router = Router();
+export const router = Router();
 
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
@@ -29,7 +27,6 @@ router.post('/signup', async (req, res) => {
                 username,
                 password, // HASH THIS
                 displayName,
-                // FIX: Use UserRole enum directly
                 role: role as Prisma.UserRole,
             },
         });
@@ -75,6 +72,3 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error during login' });
     }
 });
-
-
-export default router;

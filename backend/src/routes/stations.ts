@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import prisma from '../db';
 
-const router = Router();
+export const router = Router();
 
 // GET all stations
 router.get('/', async (req, res) => {
@@ -13,5 +13,3 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: 'Error fetching stations' });
     }
 });
-
-export default router;

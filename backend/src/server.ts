@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import tripRoutes from './routes/trips';
-import authRoutes from './routes/auth';
-import stationRoutes from './routes/stations';
-import locationRoutes from './routes/locations';
+import { router as tripRoutes } from './routes/trips';
+import { router as authRoutes } from './routes/auth';
+import { router as stationRoutes } from './routes/stations';
+import { router as locationRoutes } from './routes/locations';
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({}));
 
 // API Routes
 app.use('/api/trips', tripRoutes);

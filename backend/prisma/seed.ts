@@ -1,5 +1,3 @@
-
-// FIX: Use named imports for Prisma Client and enums.
 import * as Prisma from '@prisma/client';
 
 const prisma = new Prisma.PrismaClient();
@@ -33,7 +31,6 @@ async function main() {
 
     // --- SEED USERS ---
     await prisma.user.deleteMany();
-    // FIX: Use UserRole enum directly
     const op1 = await prisma.user.create({ data: { username: 'ali', password: 'password123', role: Prisma.UserRole.OPERATOR, displayName: 'Ali\'s Louage' } });
     const op2 = await prisma.user.create({ data: { username: 'fatma', password: 'password123', role: Prisma.UserRole.OPERATOR, displayName: 'Fatma Express' } });
     const op3 = await prisma.user.create({ data: { username: 'speedy', password: 'password123', role: Prisma.UserRole.OPERATOR, displayName: 'Speedy Louage' } });
@@ -45,10 +42,12 @@ async function main() {
     console.log('Seeded users');
 
     // --- SEED TRIPS ---
+    await prisma.louageTrip.deleteMany();
+    await prisma.busTrip.deleteMany();
+    await prisma.transporterTrip.deleteMany();
     await prisma.trip.deleteMany();
 
     // LOUAGES
-    // FIX: Use TransportType enum directly
     await prisma.trip.create({ data: { type: Prisma.TransportType.LOUAGE, operatorId: op1.id, operatorName: op1.displayName, fromCity: 'Tunis', toCity: 'Sousse', departureTime: new Date(Date.now() + 10 * 60 * 1000), arrivalTime: new Date(Date.now() + 130 * 60 * 1000), louageTrip: { create: { stationId: createdStations.tunisMoncefBey.id, price: 15, totalSeats: 8, availableSeats: 3, isFull: false, vehicleNumber: '123 TU 4567', contactInfo: '+216 21 111 222' } } } });
     await prisma.trip.create({ data: { type: Prisma.TransportType.LOUAGE, operatorId: op2.id, operatorName: op2.displayName, fromCity: 'Tunis', toCity: 'Sfax', departureTime: new Date(Date.now() + 25 * 60 * 1000), arrivalTime: new Date(Date.now() + 205 * 60 * 1000), louageTrip: { create: { stationId: createdStations.tunisMoncefBey.id, price: 22, totalSeats: 8, availableSeats: 0, isFull: true, contactInfo: '+216 22 333 444' } } } });
     await prisma.trip.create({ data: { type: Prisma.TransportType.LOUAGE, operatorId: op1.id, operatorName: op1.displayName, fromCity: 'Sousse', toCity: 'Tunis', departureTime: new Date(Date.now() + 45 * 60 * 1000), arrivalTime: new Date(Date.now() + 165 * 60 * 1000), louageTrip: { create: { stationId: createdStations.sousseLouage.id, price: 15, totalSeats: 8, availableSeats: 8, isFull: false, contactInfo: '+216 21 111 222' } } } });

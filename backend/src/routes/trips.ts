@@ -1,10 +1,8 @@
-
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Use a named import for the TransportType enum.
 import * as Prisma from '@prisma/client';
 
-const router = Router();
+export const router = Router();
 
 // GET all trips
 router.get('/', async (req, res) => {
@@ -51,7 +49,6 @@ router.post('/', async (req, res) => {
         }
         
         let newTrip;
-        // FIX: Use TransportType enum directly
         const tripType = type.toUpperCase() as Prisma.TransportType;
 
         if (tripType === Prisma.TransportType.LOUAGE) {
@@ -101,7 +98,6 @@ router.put('/:id', async (req, res) => {
         let updatedTrip;
         const tripType = type.toLowerCase();
 
-        // FIX: Use TransportType enum directly
         if (tripType === Prisma.TransportType.LOUAGE.toLowerCase()) {
             const { price, totalSeats, availableSeats, isFull, stationId, customStationName, vehicleNumber, contactInfo, ...commonUpdates } = updates;
             delete commonUpdates.louageTrip; // Remove nested object from common updates
@@ -132,6 +128,3 @@ router.put('/:id', async (req, res) => {
         res.status(500).json({ message: 'Error updating trip' });
     }
 });
-
-
-export default router;

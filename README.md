@@ -27,7 +27,7 @@ This application is built with a modern, scalable architecture, featuring a Reac
 
 ## Project Structure
 
-The project is organized into two main parts:
+The project is organized into a monorepo with two main packages: `frontend` and `backend`.
 
 ```
 .
@@ -36,13 +36,14 @@ The project is organized into two main parts:
 │   │   ├── schema.prisma # Defines the database schema
 │   │   └── seed.ts       # Database seed script
 │   ├── src/              # Backend source code (routes, data, etc.)
-│   ├── Dockerfile        # Defines the backend container image
+│   ├── Dockerfile        # Instructions to build the backend image
 │   └── ...
-├── components/           # React components for the frontend
-├── contexts/             # React context for state management
+├── frontend/             # React frontend application
+│   ├── components/
+│   ├── contexts/
+│   ├── index.html
+│   └── ...
 ├── docker-compose.yml    # Orchestrates all services (backend, db)
-├── index.html            # Main entry point for the frontend
-├── index.tsx             # Main React script
 └── README.md             # This file
 ```
 
@@ -67,7 +68,7 @@ cd <project-directory>
 
 ### Step 2: Configure Environment Variables
 
-The backend server requires a `.env` file to connect to the database.
+The backend requires a `.env` file for developers who wish to run Prisma commands or the Node.js server directly on their host machine (outside of Docker).
 
 1.  Navigate to the `backend` directory:
     ```bash
@@ -77,11 +78,12 @@ The backend server requires a `.env` file to connect to the database.
     ```bash
     cp .env.example .env
     ```
-3.  The default values in the `.env` file are pre-configured to work with the `docker-compose.yml` setup, so no further changes are needed for a standard local setup.
+
+**Note**: For the standard Docker setup (`docker-compose up`), the `DATABASE_URL` is set directly in the `docker-compose.yml` file and the `.env` file is **not** used by the running container. The `.env` file is provided for reference and for local development workflows that don't use Docker containers for the backend service.
 
 ### Step 3: Run the Application with Docker Compose
 
-Once the environment file is in place, return to the project's root directory and use Docker Compose to build and start all the services (backend server and database).
+Once you are ready, return to the project's root directory and use Docker Compose to build and start all the services (backend server and database).
 
 ```bash
 # From the root directory of the project
@@ -89,20 +91,29 @@ docker-compose up --build
 ```
 
 **What does this command do?**
-- `--build`: This flag tells Docker Compose to build the backend image from the `Dockerfile` before starting the service. You only need to use this the first time or after making changes to the backend's `Dockerfile` or source code.
+- `--build`: This flag tells Docker Compose to build the backend image from `backend/Dockerfile` before starting the service. You only need to use this the first time or after making changes to the backend's `Dockerfile`.
 - It starts the PostgreSQL database container (`db`).
 - It starts the backend server container (`backend`).
 - The backend container will automatically:
   - Wait for the database to be ready.
   - Apply any pending database migrations using Prisma.
   - Seed the database with initial data from `backend/prisma/seed.ts`.
-  - Start the Express server.
+  - Start the Express server on port 3000.
 
 The initial build process may take a few minutes. Once it's complete, you will see logs from both the database and the backend server in your terminal.
 
 ### Step 4: Access the Application
 
-- **Frontend Application**: Open your web browser and navigate to the URL provided by your local development environment. The React application will connect to the backend API automatically.
+- **Frontend Application**: To view the frontend, you need to serve the `frontend` directory with a local web server. An easy way to do this is to use a simple command line server.
+  - Make sure you have Node.js installed.
+  - Install a static server globally: `npm install -g serve`
+  - Navigate to the `frontend` directory and run the server:
+    ```bash
+    cd frontend
+    serve -l 3001 
+    ```
+  - Open your browser and go to `http://localhost:3001`.
+
 - **Backend API**: The backend server is accessible at `http://localhost:3000`. You can test endpoints using a tool like Postman or `curl` (e.g., `curl http://localhost:3000/api/trips`).
 
 ## Database Management
