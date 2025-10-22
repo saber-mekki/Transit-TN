@@ -7,7 +7,7 @@ import { AddTripForm } from './AddTripForm';
 import { BusIcon } from './icons/BusIcon';
 
 export const OperatorView: React.FC = () => {
-    const { trips, updateTrip, currentUser } = useAppContext();
+    const { trips, updateTrip, currentUser, isLoading, error } = useAppContext();
     const { t } = useI18n();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [tripToEdit, setTripToEdit] = useState<Trip | null>(null);
@@ -81,7 +81,15 @@ export const OperatorView: React.FC = () => {
                 </div>
 
                 <div className="space-y-6">
-                    {operatorTrips.length === 0 ? (
+                    {isLoading ? (
+                        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                             <p className="text-gray-500 dark:text-gray-400">Loading your trips...</p>
+                        </div>
+                    ) : error ? (
+                         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                             <p className="text-red-500">{error}</p>
+                        </div>
+                    ) : operatorTrips.length === 0 ? (
                         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                              <p className="text-gray-500 dark:text-gray-400">{t('noResults')}</p>
                         </div>

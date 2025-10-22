@@ -3,7 +3,6 @@ import { AppProvider, useAppContext } from './contexts/AppContext';
 import { useI18n } from './hooks/useI18n';
 import type { Trip, Language } from './types';
 import { TransportType, UserRole } from './types';
-import { tunisianGovernorates, countries } from './data/locations';
 import { TripCard } from './components/TripCard';
 import { TripDetailsModal } from './components/TripDetailsModal';
 import { OperatorView } from './components/OperatorView';
@@ -148,7 +147,7 @@ const Header: React.FC = () => {
 
 const MainContent: React.FC = () => {
     const { t } = useI18n();
-    const { trips, currentUser } = useAppContext();
+    const { trips, currentUser, locations, isLoading, error } = useAppContext();
     const [activeTab, setActiveTab] = useState<TransportType | 'live'>(TransportType.LOUAGE);
     const [searchResults, setSearchResults] = useState<Trip[]>([]);
     const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
@@ -169,6 +168,8 @@ const MainContent: React.FC = () => {
     const [maxPrice, setMaxPrice] = useState('');
     const [departAfter, setDepartAfter] = useState('');
     const [minSeats, setMinSeats] = useState('');
+    
+    const { tunisianGovernorates, countries } = locations;
 
     const governorateMap = useMemo(() => {
         const map = new Map<string, string[]>();
@@ -176,19 +177,19 @@ const MainContent: React.FC = () => {
             map.set(gov.name, gov.delegations);
         });
         return map;
-    }, []);
+    }, [tunisianGovernorates]);
 
     useEffect(() => {
         const gov = tunisianGovernorates.find(g => g.name === fromGovernorate);
         setFromDelegations(gov ? gov.delegations : []);
         setFromDelegation('');
-    }, [fromGovernorate]);
+    }, [fromGovernorate, tunisianGovernorates]);
 
     useEffect(() => {
         const gov = tunisianGovernorates.find(g => g.name === toGovernorate);
         setToDelegations(gov ? gov.delegations : []);
         setToDelegation('');
-    }, [toGovernorate]);
+    }, [toGovernorate, tunisianGovernorates]);
     
     useEffect(() => {
         // Clear location state when changing tabs
@@ -205,7 +206,7 @@ const MainContent: React.FC = () => {
         const results = trips.filter(trip => {
             if (activeTab === 'live') return false;
 
-            const typeMatch = trip.type === activeTab;
+            const typeMatch = trip.type.toLowerCase() === activeTab;
             if (!typeMatch) return false;
 
             if (activeTab === TransportType.TRANSPORTER) {
@@ -266,8 +267,8 @@ const MainContent: React.FC = () => {
 
     const filteredResults = useMemo(() => {
         return searchResults.filter(trip => {
-            if (maxPrice && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
-                if (trip.price > Number(maxPrice)) return false;
+            if (maxPrice && (trip.type.toLowerCase() === TransportType.LOUAGE || trip.type.toLowerCase() === TransportType.BUS)) {
+                if ('price' in trip && (trip as any).price > Number(maxPrice)) return false;
             }
             if (departAfter) {
                 const tripTime = new Date(trip.departureTime);
@@ -278,8 +279,8 @@ const MainContent: React.FC = () => {
                     return false;
                 }
             }
-            if (minSeats && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
-                if (trip.availableSeats < Number(minSeats)) return false;
+            if (minSeats && (trip.type.toLowerCase() === TransportType.LOUAGE || trip.type.toLowerCase() === TransportType.BUS)) {
+                if ('availableSeats' in trip && (trip as any).availableSeats < Number(minSeats)) return false;
             }
             return true;
         });
@@ -326,7 +327,7 @@ const MainContent: React.FC = () => {
         if (activeTab === TransportType.TRANSPORTER) {
              const locationOptions = (
                 <>
-                    <option value="">Select Location</option>
+                    <option value="">{t('country')} / {t('governorate')}</option>
                     <optgroup label={t('governorate')}>
                         {tunisianGovernorates.map(g => <option key={g.name} value={g.name}>{g.name}</option>)}
                     </optgroup>
@@ -371,7 +372,7 @@ const MainContent: React.FC = () => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('delegation')}</label>
-                        <select value={fromDelegation} onChange={e => setFromDelegation(e.target.value)} disabled={!fromGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-500">
+                        <select value={fromDelegation} onChange={e => setFromDelegation(e.target.value)} disabled={!fromGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-700">
                              <option value="">{t('delegation')}</option>
                              {fromDelegations.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
@@ -394,7 +395,7 @@ const MainContent: React.FC = () => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('delegation')}</label>
-                        <select value={toDelegation} onChange={e => setToDelegation(e.target.value)} disabled={!toGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-500">
+                        <select value={toDelegation} onChange={e => setToDelegation(e.target.value)} disabled={!toGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-700">
                              <option value="">{t('delegation')}</option>
                              {toDelegations.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
@@ -406,7 +407,7 @@ const MainContent: React.FC = () => {
 
     return (
         <main className="p-4 md:p-6">
-            {currentUser?.role === UserRole.OPERATOR ? (
+            {currentUser?.role.toLowerCase() === UserRole.OPERATOR ? (
                  <OperatorView />
             ) : (
                 <>
@@ -460,7 +461,11 @@ const MainContent: React.FC = () => {
 
                     {activeTab !== 'live' && (
                          <div className="mt-6">
-                            {searchResults.length > 0 ? (
+                            {isLoading ? (
+                                <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p>
+                            ) : error ? (
+                                <p className="text-center text-red-500 mt-8">{error}</p>
+                            ) : searchResults.length > 0 ? (
                                 filteredResults.length > 0 ? (
                                     filteredResults.map(trip => (
                                         <TripCard key={trip.id} trip={trip} onSelect={setSelectedTrip} />

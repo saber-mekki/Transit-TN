@@ -1,3 +1,4 @@
+
 export enum TransportType {
   LOUAGE = 'louage',
   BUS = 'bus',
@@ -34,6 +35,8 @@ export interface BaseTrip {
 export interface LouageTrip extends BaseTrip {
   type: TransportType.LOUAGE;
   station?: Station;
+  // FIX: Add stationId to match backend data structure
+  stationId?: string | null;
   customStationName?: string;
   price: number;
   totalSeats: number;
@@ -46,7 +49,11 @@ export interface LouageTrip extends BaseTrip {
 export interface BusTrip extends BaseTrip {
   type: TransportType.BUS;
   departureStation?: Station;
+  // FIX: Add departureStationId to match backend data structure
+  departureStationId?: string | null;
   arrivalStation?: Station;
+  // FIX: Add arrivalStationId to match backend data structure
+  arrivalStationId?: string | null;
   customDepartureStationName?: string;
   customArrivalStationName?: string;
   price: number;

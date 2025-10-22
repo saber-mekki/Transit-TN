@@ -3,8 +3,6 @@ import { useAppContext } from '../contexts/AppContext';
 import { useI18n } from '../hooks/useI18n';
 import { TransportType } from '../types';
 import type { Trip, LouageTrip, BusTrip, TransporterTrip, Station } from '../types';
-import { tunisianGovernorates, countries } from '../data/locations';
-import { cities as tunisianCities } from '../data/seed';
 
 
 interface AddTripFormProps {
@@ -41,7 +39,7 @@ const initialFormState = {
 
 export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripToEdit }) => {
     const { t } = useI18n();
-    const { addTrip, updateTrip, stations: stationsData } = useAppContext();
+    const { addTrip, updateTrip, stations: stationsData, locations } = useAppContext();
     const [formData, setFormData] = useState(initialFormState);
     
     const [fromGovernorate, setFromGovernorate] = useState('');
@@ -54,8 +52,10 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
     const [isManualArrivalStation, setIsManualArrivalStation] = useState(false);
 
     const isEditMode = !!tripToEdit;
+    
+    const { tunisianGovernorates, countries } = locations;
 
-    const stationsEntries = useMemo(() => Object.entries(stationsData), [stationsData]);
+    const stationsEntries = useMemo(() => Object.values(stationsData), [stationsData]);
 
     const cityToGovernorateMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -65,7 +65,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
             }
         }
         return map;
-    }, []);
+    }, [tunisianGovernorates]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -83,12 +83,12 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
 
             let populatedState: any = {
                 ...initialFormState,
-                type,
-                departureTime: departureTime.slice(0, 16),
-                arrivalTime: arrivalTime.slice(0, 16),
+                type: type.toLowerCase(),
+                departureTime: new Date(new Date(departureTime).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
+                arrivalTime: new Date(new Date(arrivalTime).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
             };
             
-            if (type === TransportType.TRANSPORTER) {
+            if (type.toLowerCase() === TransportType.TRANSPORTER) {
                 const parsedFrom = parseLocation(fromCity);
                 const parsedTo = parseLocation(toCity);
                 populatedState.fromCity = parsedFrom.city;
@@ -104,12 +104,11 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                 setToGovernorate(toGov);
             }
 
-            switch (type) {
+            switch (type.toLowerCase()) {
                 case TransportType.LOUAGE: {
                     const louageTrip = tripToEdit as LouageTrip;
-                    const stationKey = louageTrip.station ? Object.keys(stationsData).find(key => stationsData[key].id === louageTrip.station?.id) : '';
                     setIsManualStation(!!louageTrip.customStationName);
-                    populatedState.stationId = stationKey || '';
+                    populatedState.stationId = louageTrip.stationId || '';
                     populatedState.customStationName = louageTrip.customStationName || '';
                     populatedState.price = String(louageTrip.price);
                     populatedState.totalSeats = String(louageTrip.totalSeats);
@@ -119,13 +118,11 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                 }
                 case TransportType.BUS: {
                     const busTrip = tripToEdit as BusTrip;
-                    const depStationKey = busTrip.departureStation ? Object.keys(stationsData).find(key => stationsData[key].id === busTrip.departureStation?.id) : '';
-                    const arrStationKey = busTrip.arrivalStation ? Object.keys(stationsData).find(key => stationsData[key].id === busTrip.arrivalStation?.id) : '';
                     setIsManualDepartureStation(!!busTrip.customDepartureStationName);
                     setIsManualArrivalStation(!!busTrip.customArrivalStationName);
-                    populatedState.departureStationId = depStationKey || '';
+                    populatedState.departureStationId = busTrip.departureStationId || '';
                     populatedState.customDepartureStationName = busTrip.customDepartureStationName || '';
-                    populatedState.arrivalStationId = arrStationKey || '';
+                    populatedState.arrivalStationId = busTrip.arrivalStationId || '';
                     populatedState.customArrivalStationName = busTrip.customArrivalStationName || '';
                     populatedState.price = String(busTrip.price);
                     populatedState.totalSeats = String(busTrip.totalSeats);
@@ -150,11 +147,11 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
             setIsManualDepartureStation(false);
             setIsManualArrivalStation(false);
         }
-    }, [isOpen, tripToEdit, cityToGovernorateMap, stationsData, isEditMode]);
+    }, [isOpen, tripToEdit, cityToGovernorateMap, stationsData, isEditMode, countries]);
 
     const filteredFromStations = useMemo(() => {
         if (!fromGovernorate) return [];
-        return stationsEntries.filter(([_, station]) => {
+        return stationsEntries.filter((station) => {
             const govOfStation = cityToGovernorateMap.get(station.city);
             return govOfStation === fromGovernorate;
         });
@@ -162,7 +159,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
 
     const filteredToStations = useMemo(() => {
         if (!toGovernorate) return [];
-        return stationsEntries.filter(([_, station]) => {
+        return stationsEntries.filter((station) => {
             const govOfStation = cityToGovernorateMap.get(station.city);
             return govOfStation === toGovernorate;
         });
@@ -174,7 +171,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
         if(!isEditMode || (tripToEdit && cityToGovernorateMap.get(tripToEdit.fromCity) !== fromGovernorate)) {
              setFormData(prev => ({ ...prev, fromCity: '', stationId: '', departureStationId: '' }));
         }
-    }, [fromGovernorate, isEditMode, tripToEdit, cityToGovernorateMap]);
+    }, [fromGovernorate, isEditMode, tripToEdit, cityToGovernorateMap, tunisianGovernorates]);
 
     useEffect(() => {
         const selectedGov = tunisianGovernorates.find(g => g.name === toGovernorate);
@@ -182,7 +179,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
         if(!isEditMode || (tripToEdit && cityToGovernorateMap.get(tripToEdit.toCity) !== toGovernorate)) {
             setFormData(prev => ({ ...prev, toCity: '', arrivalStationId: '' }));
         }
-    }, [toGovernorate, isEditMode, tripToEdit, cityToGovernorateMap]);
+    }, [toGovernorate, isEditMode, tripToEdit, cityToGovernorateMap, tunisianGovernorates]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -251,13 +248,13 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
 
         switch(formData.type) {
             case TransportType.LOUAGE: {
-                const louageSpecifics: Partial<LouageTrip> = {};
+                const louageSpecifics: any = {};
                 if (isManualStation) {
                     if (formData.customStationName) louageSpecifics.customStationName = formData.customStationName;
-                    louageSpecifics.station = undefined;
+                    louageSpecifics.stationId = null;
                 } else if (formData.stationId) {
-                    louageSpecifics.station = stationsData[formData.stationId];
-                    louageSpecifics.customStationName = undefined;
+                    louageSpecifics.stationId = formData.stationId;
+                    louageSpecifics.customStationName = null;
                 }
                 tripDataPayload = {
                     ...commonData,
@@ -273,20 +270,20 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                 break;
             }
             case TransportType.BUS: {
-                const busSpecifics: Partial<BusTrip> = {};
+                const busSpecifics: any = {};
                 if (isManualDepartureStation) {
                     if(formData.customDepartureStationName) busSpecifics.customDepartureStationName = formData.customDepartureStationName;
-                    busSpecifics.departureStation = undefined;
+                    busSpecifics.departureStationId = null;
                 } else if (formData.departureStationId) {
-                    busSpecifics.departureStation = stationsData[formData.departureStationId];
-                    busSpecifics.customDepartureStationName = undefined;
+                    busSpecifics.departureStationId = formData.departureStationId;
+                    busSpecifics.customDepartureStationName = null;
                 }
                  if (isManualArrivalStation) {
                     if(formData.customArrivalStationName) busSpecifics.customArrivalStationName = formData.customArrivalStationName;
-                     busSpecifics.arrivalStation = undefined;
+                     busSpecifics.arrivalStationId = null;
                 } else if (formData.arrivalStationId) {
-                    busSpecifics.arrivalStation = stationsData[formData.arrivalStationId];
-                    busSpecifics.customArrivalStationName = undefined;
+                    busSpecifics.arrivalStationId = formData.arrivalStationId;
+                    busSpecifics.customArrivalStationName = null;
                 }
                 tripDataPayload = {
                     ...commonData,
@@ -356,7 +353,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
 
             const locationOptions = (
                 <>
-                    <option value="">Select Location</option>
+                    <option value="">{t('country')} / {t('governorate')}</option>
                     <optgroup label={t('governorate')}>
                         {tunisianGovernorates.map(gov => <option key={gov.name} value={gov.name}>{gov.name}</option>)}
                     </optgroup>
@@ -453,30 +450,30 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
         return (
             <>
                 <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('from')} (Governorate)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('from')} ({t('governorate')})</label>
                     <select value={fromGovernorate} onChange={(e) => setFromGovernorate(e.target.value)} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required>
-                        <option value="">Select Governorate</option>
+                        <option value="">{t('governorate')}</option>
                         {tunisianGovernorates.map(g => <option key={g.name} value={g.name}>{g.name}</option>)}
                     </select>
                 </div>
                 <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('from')} (Delegation)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('from')} ({t('delegation')})</label>
                     <select name="fromCity" value={formData.fromCity} onChange={handleInputChange} disabled={!fromGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700" required>
-                        <option value="">Select Delegation</option>
+                        <option value="">{t('delegation')}</option>
                         {fromDelegations.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                 </div>
                 <div className="col-span-1">
-                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('to')} (Governorate)</label>
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('to')} ({t('governorate')})</label>
                     <select value={toGovernorate} onChange={(e) => setToGovernorate(e.target.value)} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required>
-                        <option value="">Select Governorate</option>
+                        <option value="">{t('governorate')}</option>
                         {tunisianGovernorates.map(g => <option key={g.name} value={g.name}>{g.name}</option>)}
                     </select>
                 </div>
                  <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('to')} (Delegation)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('to')} ({t('delegation')})</label>
                     <select name="toCity" value={formData.toCity} onChange={handleInputChange} disabled={!toGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700" required>
-                        <option value="">Select Delegation</option>
+                        <option value="">{t('delegation')}</option>
                         {toDelegations.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                 </div>
@@ -499,7 +496,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                         ) : (
                             <select name="stationId" value={formData.stationId} onChange={handleInputChange} disabled={!fromGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700">
                                 <option value="">Select a station</option>
-                                {filteredFromStations.map(([key, s]) => <option key={s.id} value={key}>{s.name} - {s.city}</option>)}
+                                {filteredFromStations.map((s) => <option key={s.id} value={s.id}>{s.name} - {s.city}</option>)}
                             </select>
                         )}
                     </div>
@@ -533,7 +530,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                         ) : (
                             <select name="departureStationId" value={formData.departureStationId} onChange={handleInputChange} disabled={!fromGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700">
                                 <option value="">Select a station</option>
-                                {filteredFromStations.map(([key, s]) => <option key={s.id} value={key}>{s.name} - {s.city}</option>)}
+                                {filteredFromStations.map((s) => <option key={s.id} value={s.id}>{s.name} - {s.city}</option>)}
                             </select>
                         )}
                     </div>
@@ -548,7 +545,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                         ) : (
                             <select name="arrivalStationId" value={formData.arrivalStationId} onChange={handleInputChange} disabled={!toGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700">
                                 <option value="">Select a station</option>
-                                {filteredToStations.map(([key, s]) => <option key={s.id} value={key}>{s.name} - {s.city}</option>)}
+                                {filteredToStations.map((s) => <option key={s.id} value={s.id}>{s.name} - {s.city}</option>)}
                             </select>
                         )}
                     </div>
