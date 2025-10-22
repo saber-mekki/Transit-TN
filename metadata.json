@@ -1,0 +1,7 @@
+{
+  "name": "Transit TN",
+  "description": "A transit application for Tunisia covering Louages (shared taxis), national buses, and cargo transporters to Europe. It provides trip information, schedules, and seat availability.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
