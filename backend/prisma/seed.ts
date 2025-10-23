@@ -72,5 +72,6 @@ main()
     .catch(async (e) => {
         console.error(e);
         await prisma.$disconnect();
-        process.exit(1);
+        // FIX: Cast `process` to `any` to work around TypeScript type error.
+        (process as any).exit(1);
     });

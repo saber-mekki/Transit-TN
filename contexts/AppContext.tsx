@@ -147,7 +147,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addTrip = async (tripData: Omit<Trip, 'id'| 'operatorId' | 'operatorName'>) => {
-    if (!currentUser || currentUser.role !== UserRole.OPERATOR) {
+    if (!currentUser || currentUser.role.toLowerCase() !== UserRole.OPERATOR) {
         console.error("Only operators can add trips.");
         return;
     }

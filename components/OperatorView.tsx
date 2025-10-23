@@ -137,7 +137,14 @@ export const OperatorView: React.FC = () => {
                                             <input
                                                 type="number"
                                                 value={(trip as LouageTrip | BusTrip).availableSeats}
-                                                onChange={(e) => handleUpdateSeats(trip, { availableSeats: parseInt(e.target.value), isFull: parseInt(e.target.value) === 0 })}
+                                                onChange={(e) => {
+                                                    const newSeats = parseInt(e.target.value) || 0;
+                                                    const updates: Partial<LouageTrip | BusTrip> = { availableSeats: newSeats };
+                                                    if (trip.type === TransportType.LOUAGE) {
+                                                        (updates as Partial<LouageTrip>).isFull = newSeats === 0;
+                                                    }
+                                                    handleUpdateSeats(trip, updates);
+                                                }}
                                                 className="w-24 p-2 border border-gray-300 dark:border-gray-500 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:border-indigo-500"
                                                 min="0"
                                                 max={(trip as LouageTrip | BusTrip).totalSeats}
