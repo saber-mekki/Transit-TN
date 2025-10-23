@@ -129,3 +129,25 @@ router.put('/:id', async (req, res) => {
         res.status(500).json({ message: 'Error updating trip' });
     }
 });
+
+// DELETE a trip
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Use a transaction to ensure all related data is deleted
+        await prisma.$transaction(async (prisma) => {
+            // Delete trip-specific data first
+            await prisma.louageTrip.deleteMany({ where: { tripId: id } });
+            await prisma.busTrip.deleteMany({ where: { tripId: id } });
+            await prisma.transporterTrip.deleteMany({ where: { tripId: id } });
+
+            // Then delete the main trip record
+            await prisma.trip.delete({ where: { id } });
+        });
+
+        res.status(204).send();
+    } catch (error) {
+        console.error("Failed to delete trip:", error);
+        res.status(500).json({ message: "Error deleting trip" });
+    }
+});

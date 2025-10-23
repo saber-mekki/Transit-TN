@@ -20,6 +20,8 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/stations', stationRoutes);
 app.use('/api/locations', locationRoutes);
+// Use the auth router for user management as well
+app.use('/api/users', authRoutes);
 
 
 app.listen(PORT, () => {

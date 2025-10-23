@@ -41,23 +41,27 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('username')}</label>
+            <label htmlFor="login-username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('username')}</label>
             <input 
+              id="login-username"
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" 
+              placeholder={t('username')}
+              className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" 
               required 
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('password')}</label>
+            <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('password')}</label>
             <div className="relative mt-1">
               <input 
+                id="login-password"
                 type={showPassword ? 'text' : 'password'} 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" 
+                placeholder="********"
+                className="block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" 
                 required 
               />
               <button

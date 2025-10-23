@@ -23,15 +23,24 @@ interface LocationData {
 interface AppContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
   currentUser: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   signUp: (data: SignUpData) => Promise<void>;
   trips: Trip[];
-  updateTrip: (updatedTrip: Trip) => void;
-  addTrip: (tripData: Omit<Trip, 'id' | 'operatorId' | 'operatorName'>) => void;
+  updateTrip: (updatedTrip: Trip) => Promise<void>;
+  addTrip: (tripData: Omit<Trip, 'id' | 'operatorId' | 'operatorName'>) => Promise<void>;
+  deleteTrip: (tripId: string) => Promise<void>;
   stations: { [key: string]: Station };
+  addStation: (stationData: Omit<Station, 'id'>) => Promise<void>;
+  updateStation: (stationData: Station) => Promise<void>;
+  deleteStation: (stationId: string) => Promise<void>;
   locations: LocationData;
+  allUsers: User[];
+  updateUserRole: (userId: string, role: UserRole) => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>;
   isLoading: boolean;
   error: string | null;
 }
@@ -43,53 +52,80 @@ const getApiUrl = () => 'http://localhost:3000/api';
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('ar');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) return savedTheme;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    return 'light';
+  });
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [stations, setStations] = useState<{ [key: string]: Station }>({});
   const [locations, setLocations] = useState<LocationData>({ tunisianGovernorates: [], countries: [] });
+  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
-  // Fetch initial data from the backend
   useEffect(() => {
-    const fetchData = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const [tripsRes, stationsRes, locationsRes] = await Promise.all([
-                fetch(`${getApiUrl()}/trips`),
-                fetch(`${getApiUrl()}/stations`),
-                fetch(`${getApiUrl()}/locations`)
-            ]);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+  
+  const fetchAllData = useCallback(async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+          const [tripsRes, stationsRes, locationsRes] = await Promise.all([
+              fetch(`${getApiUrl()}/trips`),
+              fetch(`${getApiUrl()}/stations`),
+              fetch(`${getApiUrl()}/locations`)
+          ]);
 
-            if (!tripsRes.ok || !stationsRes.ok || !locationsRes.ok) {
-                throw new Error('Failed to fetch initial data from the server.');
-            }
+          if (!tripsRes.ok || !stationsRes.ok || !locationsRes.ok) {
+              throw new Error('Failed to fetch initial data from the server.');
+          }
 
-            const tripsData = await tripsRes.json();
-            const stationsData = await stationsRes.json();
-            const locationsData = await locationsRes.json();
-            
-            setTrips(tripsData);
-            setLocations(locationsData);
+          const tripsData = await tripsRes.json();
+          const stationsData = await stationsRes.json();
+          const locationsData = await locationsRes.json();
+          
+          setTrips(tripsData);
+          setLocations(locationsData);
 
-            const stationsMap = stationsData.reduce((acc: any, station: Station) => {
-                acc[station.id] = station;
-                return acc;
-            }, {});
-            setStations(stationsMap);
+          const stationsMap = stationsData.reduce((acc: any, station: Station) => {
+              acc[station.id] = station;
+              return acc;
+          }, {});
+          setStations(stationsMap);
 
-        } catch (err) {
-            console.error("Failed to fetch initial data:", err);
-            setError("Could not connect to the server. Please make sure the backend is running and refresh the page.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    fetchData();
+      } catch (err) {
+          console.error("Failed to fetch initial data:", err);
+          setError("Could not connect to the server. Please make sure the backend is running and refresh the page.");
+      } finally {
+          setIsLoading(false);
+      }
   }, []);
 
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await fetch(`${getApiUrl()}/users`);
+      if (!res.ok) throw new Error('Failed to fetch users');
+      const usersData = await res.json();
+      setAllUsers(usersData);
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentUser?.role.toUpperCase() === UserRole.ADMIN.toUpperCase()) {
+      fetchUsers();
+    }
+  }, [currentUser, fetchUsers]);
   
   const login = useCallback(async (username: string, password: string): Promise<void> => {
     const response = await fetch(`${getApiUrl()}/auth/login`, {
@@ -97,18 +133,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     });
-
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Invalid credentials');
     }
-
     const user = await response.json();
     setCurrentUser(user);
   }, []);
 
   const logout = useCallback(() => {
     setCurrentUser(null);
+    setAllUsers([]); // Clear admin-only data on logout
   }, []);
 
   const signUp = useCallback(async (data: SignUpData): Promise<void> => {
@@ -117,63 +152,82 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
-
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Sign up failed');
     }
-
     const newUser = await response.json();
-    setCurrentUser(newUser); // Auto-login after sign up
+    setCurrentUser(newUser);
   }, []);
 
+  const updateTrip = useCallback(async (updatedTrip: Trip) => {
+    await fetch(`${getApiUrl()}/trips/${updatedTrip.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTrip),
+    });
+    await fetchAllData();
+  }, [fetchAllData]);
 
-  const updateTrip = async (updatedTrip: Trip) => {
-    try {
-        const response = await fetch(`${getApiUrl()}/trips/${updatedTrip.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedTrip),
-        });
-        if (!response.ok) throw new Error('Failed to update trip');
+  const addTrip = useCallback(async (tripData: Omit<Trip, 'id'| 'operatorId' | 'operatorName'>) => {
+    if (!currentUser) return;
+    await fetch(`${getApiUrl()}/trips`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...tripData, operatorId: currentUser.id }),
+    });
+    await fetchAllData();
+  }, [currentUser, fetchAllData]);
+  
+  const deleteTrip = useCallback(async (tripId: string) => {
+    await fetch(`${getApiUrl()}/trips/${tripId}`, { method: 'DELETE' });
+    await fetchAllData();
+  }, [fetchAllData]);
+  
+  const updateUserRole = useCallback(async (userId: string, role: UserRole) => {
+    await fetch(`${getApiUrl()}/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role }),
+    });
+    await fetchUsers();
+  }, [fetchUsers]);
 
-        // Refetch all trips to get the relations populated correctly for the UI
-        const tripsRes = await fetch(`${getApiUrl()}/trips`);
-        const tripsData = await tripsRes.json();
-        setTrips(tripsData);
-    } catch(err) {
-        console.error("Error updating trip:", err);
-    }
-  };
+  const deleteUser = useCallback(async (userId: string) => {
+    await fetch(`${getApiUrl()}/users/${userId}`, { method: 'DELETE' });
+    await fetchUsers();
+  }, [fetchUsers]);
+  
+  const addStation = useCallback(async (stationData: Omit<Station, 'id'>) => {
+      await fetch(`${getApiUrl()}/stations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(stationData)
+      });
+      await fetchAllData();
+  }, [fetchAllData]);
 
-  const addTrip = async (tripData: Omit<Trip, 'id'| 'operatorId' | 'operatorName'>) => {
-    // FIX: Corrected role check to be case-insensitive. The backend sends uppercase roles.
-    if (!currentUser || currentUser.role.toUpperCase() !== UserRole.OPERATOR.toUpperCase()) {
-        console.error("Only operators can add trips. Current role:", currentUser?.role);
-        return;
-    }
+  const updateStation = useCallback(async (stationData: Station) => {
+      await fetch(`${getApiUrl()}/stations/${stationData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(stationData)
+      });
+      await fetchAllData();
+  }, [fetchAllData]);
+  
+  const deleteStation = useCallback(async (stationId: string) => {
+      await fetch(`${getApiUrl()}/stations/${stationId}`, { method: 'DELETE' });
+      await fetchAllData();
+  }, [fetchAllData]);
 
-    try {
-        const response = await fetch(`${getApiUrl()}/trips`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...tripData, operatorId: currentUser.id }),
-        });
-        if (!response.ok) throw new Error('Failed to add trip');
-        
-        // Refetch all trips to get the relations populated correctly for the UI
-        const tripsRes = await fetch(`${getApiUrl()}/trips`);
-        const tripsData = await tripsRes.json();
-        setTrips(tripsData);
-
-    } catch(err) {
-         console.error("Error adding trip:", err);
-    }
-  };
 
   const contextValue = { 
-      language, setLanguage, currentUser, login, logout, signUp, 
-      trips, updateTrip, addTrip, stations, locations, isLoading, error 
+      language, setLanguage, theme, setTheme, currentUser, login, logout, signUp, 
+      trips, updateTrip, addTrip, deleteTrip,
+      stations, addStation, updateStation, deleteStation,
+      locations, allUsers, updateUserRole, deleteUser,
+      isLoading, error 
   };
 
   return (

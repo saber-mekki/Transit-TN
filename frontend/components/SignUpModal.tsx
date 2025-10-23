@@ -107,16 +107,16 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
             <form id="signUpForm" onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('displayName')}</label>
-                <input type="text" name="displayName" value={formData.displayName} onChange={handleInputChange} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                <input type="text" name="displayName" value={formData.displayName} onChange={handleInputChange} placeholder={t('displayName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('username')}</label>
-                <input type="text" name="username" value={formData.username} onChange={handleInputChange} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                <input type="text" name="username" value={formData.username} onChange={handleInputChange} placeholder={t('username')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('password')}</label>
                 <div className="relative mt-1">
-                  <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleInputChange} className="block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                  <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleInputChange} placeholder="********" className="block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -139,7 +139,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('confirmPassword')}</label>
                 <div className="relative mt-1">
-                  <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} className="block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                  <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} placeholder="********" className="block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -210,19 +210,19 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                     {t('continueWithFacebook')}
                 </button>
                 <button type="button" disabled title={t('comingSoon')} className="w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm bg-black text-sm font-medium text-white opacity-50 cursor-not-allowed dark:bg-gray-200 dark:text-black">
-                    <i className="fab fa-apple text-lg mr-2 rtl:ml-2"></i>
-                    {t('continueWithApple')}
-                </button>
-            </div>
-
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
-              {t('haveAccount')}{' '}
-              <button onClick={onSwitchToLogin} className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                {t('login')}
-              </button>
-            </p>
+                <i className="fab fa-apple text-lg mr-2 rtl:ml-2"></i>
+                {t('continueWithApple')}
+            </button>
         </div>
-      </div>
+
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+          {t('haveAccount')}{' '}
+          <button onClick={onSwitchToLogin} className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+            {t('login')}
+          </button>
+        </p>
     </div>
-  );
+  </div>
+</div>
+);
 };

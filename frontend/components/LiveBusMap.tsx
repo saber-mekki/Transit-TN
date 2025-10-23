@@ -27,11 +27,12 @@ const haversineDistance = (
 };
 
 export const LiveBusMap: React.FC = () => {
-    const { trips, stations } = useAppContext();
+    const { trips, stations, theme } = useAppContext();
     const { t } = useI18n();
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapInstanceRef = useRef<any>(null);
     const markersRef = useRef<{ [key: string]: any }>({});
+    const tileLayersRef = useRef<{ light?: any; dark?: any; }>({});
 
     // Create a map of all station locations for quick lookup
     const allStations = useMemo(() => Object.values(stations), [stations]);
@@ -50,7 +51,7 @@ export const LiveBusMap: React.FC = () => {
 
         let start: { lat: number, lng: number } | null = null;
         let end: { lat: number, lng: number } | null = null;
-
+        
         switch(trip.type) {
             case TransportType.LOUAGE:
                 start = getStationCoords((trip as LouageTrip).station) ?? getStationCoords(stationByCityMap.get(trip.fromCity));
@@ -102,13 +103,22 @@ export const LiveBusMap: React.FC = () => {
             const map = L.map(mapContainerRef.current, {
                 scrollWheelZoom: true,
             }).setView([34.0, 9.5], 7);
+            mapInstanceRef.current = map;
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            tileLayersRef.current.light = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 18,
-            }).addTo(map);
+            });
 
-            mapInstanceRef.current = map;
+            tileLayersRef.current.dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            });
+            
+            // Add initial layer based on current theme from context
+            const initialLayer = theme === 'dark' ? tileLayersRef.current.dark : tileLayersRef.current.light;
+            if(initialLayer) initialLayer.addTo(map);
         }
 
         return () => {
@@ -118,6 +128,30 @@ export const LiveBusMap: React.FC = () => {
             }
         };
     }, []);
+
+    // Effect to handle theme switching for map tiles
+    useEffect(() => {
+        const map = mapInstanceRef.current;
+        if (!map || !tileLayersRef.current.light || !tileLayersRef.current.dark) return;
+
+        const { light, dark } = tileLayersRef.current;
+
+        if (theme === 'dark') {
+            if (map.hasLayer(light)) {
+                map.removeLayer(light);
+            }
+            if (!map.hasLayer(dark)) {
+                map.addLayer(dark);
+            }
+        } else { // theme is 'light'
+            if (map.hasLayer(dark)) {
+                map.removeLayer(dark);
+            }
+            if (!map.hasLayer(light)) {
+                map.addLayer(light);
+            }
+        }
+    }, [theme]);
 
     // Update vehicle markers
     useEffect(() => {
@@ -133,16 +167,14 @@ export const LiveBusMap: React.FC = () => {
                 const arrivalTime = new Date(trip.arrivalTime);
                 let totalDuration = arrivalTime.getTime() - departureTime.getTime();
                 
-                // For simulation, let's make transporters always "in progress" with a fixed duration
                 if (trip.type === TransportType.TRANSPORTER) {
                     totalDuration = 4 * 60 * 60 * 1000;
                 }
 
                 if (totalDuration <= 0) return;
-                
-                // Use a continuous cycle for simulation purposes
+
                 const timeSinceMidnight = now.getTime() - new Date(now).setHours(0, 0, 0, 0);
-                const tripOffset = (trip.id.charCodeAt(1) || 0) * 30000; // Stagger start times
+                const tripOffset = (trip.id.charCodeAt(1) || 0) * 30000;
                 const timeProgress = ((timeSinceMidnight + tripOffset) % totalDuration) / totalDuration;
                 
                 const segmentDistances: number[] = [];
@@ -245,7 +277,7 @@ export const LiveBusMap: React.FC = () => {
         const intervalId = setInterval(updatePositions, 2000);
 
         return () => clearInterval(intervalId);
-    }, [tripsWithPaths, t]);
+    }, [tripsWithPaths, t, theme]);
 
     return <div ref={mapContainerRef} className="w-full h-96 md:h-[500px] bg-gray-200 dark:bg-gray-700 rounded-lg shadow-inner z-0" />;
 };

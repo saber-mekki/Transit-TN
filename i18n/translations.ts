@@ -93,6 +93,7 @@ export const translations: Translations = {
     continueWithFacebook: 'متابعة باستخدام فيسبوك',
     continueWithApple: 'متابعة باستخدام آبل',
     comingSoon: 'قريباً',
+    toggleTheme: 'تبديل المظهر',
   },
   fr: {
     appName: 'Transit TN',
@@ -186,6 +187,7 @@ export const translations: Translations = {
     continueWithFacebook: 'Continuer avec Facebook',
     continueWithApple: 'Continuer avec Apple',
     comingSoon: 'Bientôt disponible',
+    toggleTheme: 'Changer le thème',
   },
   en: {
     appName: 'Transit TN',
@@ -279,5 +281,6 @@ export const translations: Translations = {
     continueWithFacebook: 'Continue with Facebook',
     continueWithApple: 'Continue with Apple',
     comingSoon: 'Coming soon',
+    toggleTheme: 'Toggle theme',
   }
 };

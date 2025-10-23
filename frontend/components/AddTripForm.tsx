@@ -394,7 +394,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                                     value={formData.fromCity}
                                     onChange={handleInputChange}
                                     placeholder="e.g. Paris"
-                                    className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white"
+                                    className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                                     required
                                 />
                             </div>
@@ -437,7 +437,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                                     value={formData.toCity}
                                     onChange={handleInputChange}
                                     placeholder="e.g. Marseille"
-                                    className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white"
+                                    className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                                     required
                                 />
                             </div>
@@ -492,7 +492,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                             <label htmlFor="manualStation" className="text-sm text-gray-600 dark:text-gray-400">{t('enterManually')}</label>
                         </div>
                         {isManualStation ? (
-                            <input type="text" name="customStationName" value={formData.customStationName} onChange={handleInputChange} placeholder={t('customStationName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" />
+                            <input type="text" name="customStationName" value={formData.customStationName} onChange={handleInputChange} placeholder={t('customStationName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" />
                         ) : (
                             <select name="stationId" value={formData.stationId} onChange={handleInputChange} disabled={!fromGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700">
                                 <option value="">Select a station</option>
@@ -502,7 +502,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('price')}</label>
-                        <input type="number" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g. 15" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                        <input type="number" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g. 15" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('seats')}</label>
@@ -510,11 +510,11 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('contactInfoFieldLabel')}</label>
-                        <input type="text" name="contactInfo" value={formData.contactInfo} onChange={handleInputChange} placeholder={t('contactInfoPlaceholder')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" />
+                        <input type="text" name="contactInfo" value={formData.contactInfo} onChange={handleInputChange} placeholder={t('contactInfoPlaceholder')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('vehicleNumber')}</label>
-                        <input type="text" name="vehicleNumber" value={formData.vehicleNumber} onChange={handleInputChange} placeholder="123 TU 4567" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" />
+                        <input type="text" name="vehicleNumber" value={formData.vehicleNumber} onChange={handleInputChange} placeholder="123 TU 4567" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" />
                     </div>
                 </>;
             case TransportType.BUS:
@@ -526,7 +526,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                             <label htmlFor="manualDepartureStation" className="text-sm text-gray-600 dark:text-gray-400">{t('enterManually')}</label>
                         </div>
                          {isManualDepartureStation ? (
-                            <input type="text" name="customDepartureStationName" value={formData.customDepartureStationName} onChange={handleInputChange} placeholder={t('customStationName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" />
+                            <input type="text" name="customDepartureStationName" value={formData.customDepartureStationName} onChange={handleInputChange} placeholder={t('customStationName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" />
                         ) : (
                             <select name="departureStationId" value={formData.departureStationId} onChange={handleInputChange} disabled={!fromGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700">
                                 <option value="">Select a station</option>
@@ -541,7 +541,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                             <label htmlFor="manualArrivalStation" className="text-sm text-gray-600 dark:text-gray-400">{t('enterManually')}</label>
                         </div>
                         {isManualArrivalStation ? (
-                             <input type="text" name="customArrivalStationName" value={formData.customArrivalStationName} onChange={handleInputChange} placeholder={t('customStationName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" />
+                             <input type="text" name="customArrivalStationName" value={formData.customArrivalStationName} onChange={handleInputChange} placeholder={t('customStationName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" />
                         ) : (
                             <select name="arrivalStationId" value={formData.arrivalStationId} onChange={handleInputChange} disabled={!toGovernorate} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white disabled:bg-gray-700">
                                 <option value="">Select a station</option>
@@ -562,11 +562,11 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                 return <>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('contactInfoFieldLabel')}</label>
-                        <input type="text" name="contactInfo" value={formData.contactInfo} onChange={handleInputChange} placeholder={t('contactInfoPlaceholder')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                        <input type="text" name="contactInfo" value={formData.contactInfo} onChange={handleInputChange} placeholder={t('contactInfoPlaceholder')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Type</label>
-                        <input type="text" name="vehicleType" value={formData.vehicleType} onChange={handleInputChange} placeholder="e.g. Refrigerated Truck" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                        <input type="text" name="vehicleType" value={formData.vehicleType} onChange={handleInputChange} placeholder="e.g. Refrigerated Truck" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('availableSpace')}</label>
@@ -574,12 +574,12 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                             <div className="pointer-events-none absolute inset-y-0 ltr:left-0 rtl:right-0 flex items-center pl-3 rtl:pr-3">
                                 <i className="fas fa-box text-gray-400"></i>
                             </div>
-                            <input type="text" name="availableSpace" value={formData.availableSpace} onChange={handleInputChange} placeholder="e.g. 5 tons" className="block w-full p-2 ltr:pl-10 rtl:pr-10 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                            <input type="text" name="availableSpace" value={formData.availableSpace} onChange={handleInputChange} placeholder="e.g. 5 tons" className="block w-full p-2 ltr:pl-10 rtl:pr-10 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                         </div>
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('eta')}</label>
-                        <input type="text" name="eta" value={formData.eta} onChange={handleInputChange} placeholder="e.g. 3 days" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white" required />
+                        <input type="text" name="eta" value={formData.eta} onChange={handleInputChange} placeholder="e.g. 3 days" className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
                     </div>
                     <div className="md:col-span-2 lg:col-span-4">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('routeLabel')}</label>
@@ -591,7 +591,7 @@ export const AddTripForm: React.FC<AddTripFormProps> = ({ isOpen, onClose, tripT
                                         value={point}
                                         onChange={(e) => handleRouteChange(e.target.value, index)}
                                         placeholder={t('routePlaceholder')}
-                                        className="flex-grow p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white"
+                                        className="flex-grow p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                                     />
                                     <button
                                         type="button"

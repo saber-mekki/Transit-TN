@@ -23,6 +23,8 @@ interface LocationData {
 interface AppContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
   currentUser: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -43,6 +45,16 @@ const getApiUrl = () => 'http://localhost:3000/api';
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('ar');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      return savedTheme;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  });
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [stations, setStations] = useState<{ [key: string]: Station }>({});
@@ -51,6 +63,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [error, setError] = useState<string | null>(null);
 
 
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+  
   // Fetch initial data from the backend
   useEffect(() => {
     const fetchData = async () => {
@@ -147,8 +169,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addTrip = async (tripData: Omit<Trip, 'id'| 'operatorId' | 'operatorName'>) => {
-    if (!currentUser || currentUser.role.toLowerCase() !== UserRole.OPERATOR) {
-        console.error("Only operators can add trips.");
+    // FIX: Corrected role check to be case-insensitive. The backend sends uppercase roles.
+    if (!currentUser || currentUser.role.toUpperCase() !== UserRole.OPERATOR.toUpperCase()) {
+        console.error("Only operators can add trips. Current role:", currentUser?.role);
         return;
     }
 
@@ -171,7 +194,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const contextValue = { 
-      language, setLanguage, currentUser, login, logout, signUp, 
+      language, setLanguage, theme, setTheme, currentUser, login, logout, signUp, 
       trips, updateTrip, addTrip, stations, locations, isLoading, error 
   };
 

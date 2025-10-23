@@ -15,7 +15,7 @@ import { LiveBusMap } from './components/LiveBusMap';
 
 const Header: React.FC = () => {
     const { t, language } = useI18n();
-    const { setLanguage, currentUser, logout } = useAppContext();
+    const { setLanguage, currentUser, logout, theme, setTheme } = useAppContext();
     const [authModal, setAuthModal] = useState<'login' | 'signup' | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     
@@ -23,6 +23,10 @@ const Header: React.FC = () => {
         document.documentElement.lang = language;
         document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     }, [language]);
+
+    const handleThemeToggle = () => {
+        setTheme(theme === 'light' ? 'dark' : 'light');
+    };
 
 
     return (
@@ -49,28 +53,38 @@ const Header: React.FC = () => {
                             </button>
                         </div>
                     )}
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-4 ml-2 pl-4 border-l border-gray-200 dark:border-gray-700">
                         <button
-                            onClick={() => setLanguage('ar')}
-                            className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'ar' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                            title="العربية"
+                            onClick={handleThemeToggle}
+                            title={t('toggleTheme')}
+                            aria-label={t('toggleTheme')}
+                            className="text-xl text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
                         >
-                            🇹🇳
+                            {theme === 'light' ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
                         </button>
-                        <button
-                            onClick={() => setLanguage('fr')}
-                            className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'fr' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                            title="Français"
-                        >
-                            🇫🇷
-                        </button>
-                        <button
-                            onClick={() => setLanguage('en')}
-                            className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'en' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                            title="English"
-                        >
-                            🇬🇧
-                        </button>
+                        <div className="flex items-center space-x-3">
+                            <button
+                                onClick={() => setLanguage('ar')}
+                                className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'ar' ? 'opacity-100 scale-110' : 'opacity-60'}`}
+                                title="العربية"
+                            >
+                                🇹🇳
+                            </button>
+                            <button
+                                onClick={() => setLanguage('fr')}
+                                className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'fr' ? 'opacity-100 scale-110' : 'opacity-60'}`}
+                                title="Français"
+                            >
+                                🇫🇷
+                            </button>
+                            <button
+                                onClick={() => setLanguage('en')}
+                                className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'en' ? 'opacity-100 scale-110' : 'opacity-60'}`}
+                                title="English"
+                            >
+                                🇬🇧
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -105,6 +119,14 @@ const Header: React.FC = () => {
                                 </div>
                             )}
                             <div className="flex items-center justify-around pt-4 border-t dark:border-gray-600">
+                                <button
+                                    onClick={() => { handleThemeToggle(); setIsMenuOpen(false); }}
+                                    title={t('toggleTheme')}
+                                    aria-label={t('toggleTheme')}
+                                    className="text-2xl text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                                >
+                                    {theme === 'light' ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
+                                </button>
                                 <button
                                     onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }}
                                     className={`text-3xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'ar' ? 'opacity-100 scale-110' : 'opacity-60'}`}

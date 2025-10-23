@@ -87,6 +87,7 @@ export const MapView: React.FC<MapViewProps> = ({ trip }) => {
   return (
     <div className="mt-4 h-64 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
       <iframe
+        className="dark:filter dark:invert-[1] dark:hue-rotate-180 dark:contrast-75"
         width="100%"
         height="100%"
         style={{ border: 0 }}
