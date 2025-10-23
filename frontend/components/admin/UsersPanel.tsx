@@ -44,7 +44,6 @@ export const UsersPanel: React.FC = () => {
                                 <td className="px-6 py-4">{user.username}</td>
                                 <td className="px-6 py-4">
                                     <select
-                                        // FIX: Role is now guaranteed to be lowercase from the context.
                                         value={user.role}
                                         onChange={e => handleRoleChange(user.id, e.target.value as UserRole)}
                                         className="p-1 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white"

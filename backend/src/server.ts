@@ -6,6 +6,7 @@ import { router as tripRoutes } from './routes/trips';
 import { router as authRoutes } from './routes/auth';
 import { router as stationRoutes } from './routes/stations';
 import { router as locationRoutes } from './routes/locations';
+import { router as userRoutes } from './routes/users';
 
 dotenv.config();
 
@@ -20,8 +21,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/stations', stationRoutes);
 app.use('/api/locations', locationRoutes);
-// Use the auth router for user management as well
-app.use('/api/users', authRoutes);
+app.use('/api/users', userRoutes);
 
 
 app.listen(PORT, () => {

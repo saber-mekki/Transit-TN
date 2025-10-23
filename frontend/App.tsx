@@ -37,9 +37,8 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex items-center space-x-4">
-                    {/* FIX: Simplified role check after ensuring currentUser.role is always lowercase. */}
                     {currentUser?.role === UserRole.ADMIN && (
-                        <button onClick={onToggleAdminView} className="bg-amber-500 text-white font-bold py-2 px-4 rounded-md hover:bg-amber-600 transition-colors text-sm">
+                        <button onClick={onToggleAdminView} className="bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-sm">
                            <i className={`fas ${isAdminView ? 'fa-arrow-left' : 'fa-user-shield'} mr-2`}></i>
                            {isAdminView ? t('backToApp') : t('adminPanel')}
                         </button>
@@ -109,9 +108,8 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                 {isMenuOpen && (
                     <div className="md:hidden absolute top-full right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg p-4 z-20 border dark:border-gray-700">
                         <div className="flex flex-col space-y-4">
-                             {/* FIX: Simplified role check after ensuring currentUser.role is always lowercase. */}
                             {currentUser?.role === UserRole.ADMIN && (
-                                <button onClick={() => { onToggleAdminView(); setIsMenuOpen(false); }} className="w-full text-left bg-amber-500 text-white font-bold py-2 px-3 rounded-md hover:bg-amber-600 transition-colors text-sm">
+                                <button onClick={() => { onToggleAdminView(); setIsMenuOpen(false); }} className="w-full text-left bg-green-600 text-white font-bold py-2 px-3 rounded-md hover:bg-green-700 transition-colors text-sm">
                                    {isAdminView ? t('backToApp') : t('adminPanel')}
                                 </button>
                             )}
@@ -243,7 +241,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         const results = trips.filter(trip => {
             if (activeTab === 'live') return false;
 
-            const typeMatch = trip.type.toLowerCase() === activeTab;
+            const typeMatch = trip.type === activeTab;
             if (!typeMatch) return false;
 
             if (activeTab === TransportType.TRANSPORTER) {
@@ -409,7 +407,6 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
 
     return (
         <main className="p-4 md:p-6">
-            {/* FIX: Simplified role check after ensuring currentUser.role is always lowercase. */}
             {currentUser?.role === UserRole.OPERATOR ? (
                  <OperatorView />
             ) : (
@@ -493,9 +490,7 @@ function App() {
 const AppContent: React.FC<{showSplash: boolean, isAdminView: boolean, setIsAdminView: (isAdmin: boolean) => void}> = ({ showSplash, isAdminView, setIsAdminView }) => {
     const { currentUser } = useAppContext();
 
-    // If user is not an admin, ensure they cannot be in admin view
     useEffect(() => {
-        // FIX: Simplified role check after ensuring currentUser.role is always lowercase.
         if (currentUser?.role !== UserRole.ADMIN && isAdminView) {
             setIsAdminView(false);
         }
