@@ -381,14 +381,7 @@ const MainContent: React.FC = () => {
     };
     
     const renderMainView = () => {
-        if (isLoading) {
-            return null; // Don't render main content while loading, splash screen is visible
-        }
-
-        if (error && !currentUser) { // Only block rendering if there's a critical error and no user view
-            return <div className="p-4 md:p-6"><p className="text-center text-red-500 mt-8">{error}</p></div>;
-        }
-
+        // FIX: Check currentUser role with case-insensitivity.
         if (currentUser?.role.toUpperCase() === UserRole.OPERATOR.toUpperCase()) {
             return <OperatorView />;
         }
@@ -439,7 +432,7 @@ const MainContent: React.FC = () => {
 
                 {activeTab !== 'live' && (
                     <div className="mt-6">
-                        {error ? <p className="text-center text-red-500 mt-8">{error}</p> : renderResults()}
+                        {error ? <p className="text-center text-red-500 mt-8">{error}</p> : (isLoading ? <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p> : renderResults())}
                     </div>
                 )}
                 
@@ -450,7 +443,13 @@ const MainContent: React.FC = () => {
 
     return (
         <main className="p-4 md:p-6">
-           {renderMainView()}
+           {isLoading ? (
+             <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
+                {error ? <p className="text-red-500">{error}</p> : <p>Loading initial data...</p>}
+             </div>
+           ) : (
+            renderMainView()
+           )}
         </main>
     );
 }

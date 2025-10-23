@@ -1,4 +1,4 @@
-import express = require('express');
+import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { router as tripRoutes } from './routes/trips';

@@ -88,7 +88,7 @@ docker-compose up --build
 **What does this command do?**
 - `--build`: Forces Docker to rebuild the backend image. Use this the first time or after making changes to the backend code.
 - It starts the PostgreSQL database (`db`) and the backend server (`backend`).
-- The backend container will automatically wait for the database, apply migrations, and start the server on port 3000.
+- The backend container will automatically wait for the database to be healthy, apply any database migrations, and start the server on port 3000.
 
 The initial build may take a few minutes.
 
@@ -96,18 +96,15 @@ The initial build may take a few minutes.
 
 - **Frontend Application**: The simplest way to run the frontend is to use a local web server.
   - If you have Node.js installed, open a **new terminal window**.
-  - Navigate to the `frontend` directory and use `npx` to start a server:
+  - Navigate to the `frontend` directory and use `npx` to start a server on port **3001**:
     ```bash
     cd frontend
-    npx serve
-    ```
-  - The server will give you a URL, usually `http://localhost:3000`. **Since our backend is on port 3000, you should serve the frontend on a different port**. Use this command instead:
-    ```bash
     npx serve -l 3001
     ```
   - Now, open your browser and go to **`http://localhost:3001`**.
 
 - **Backend API**: The backend server is accessible at `http://localhost:3000`.
+- **Database**: The database is accessible from your host machine on port **5433**.
 
 ## Database Management
 

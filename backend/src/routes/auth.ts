@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import prisma from '../db';
-import * as Prisma from '@prisma/client';
+import { UserRole } from '@prisma/client';
 
 export const router = Router();
 
@@ -27,7 +27,7 @@ router.post('/signup', async (req, res) => {
                 username,
                 password, // HASH THIS
                 displayName,
-                role: role.toUpperCase() as Prisma.UserRole,
+                role: role.toUpperCase() as UserRole,
             },
         });
         
