@@ -29,7 +29,6 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
         setTheme(theme === 'light' ? 'dark' : 'light');
     };
 
-
     return (
         <>
             <header className="bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center relative">
@@ -374,7 +373,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('delegation')}</label>
-                        <select value={fromDelegation} onChange={e => setFromDelegation(e.target.value)} disabled={!fromGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-700">
+                        <select value={fromDelegation} onChange={e => setFromDelegation(e.target.value)} disabled={!fromGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-100 dark:disabled:bg-gray-700">
                              <option value="">{t('delegation')}</option>
                              {fromDelegations.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
@@ -395,7 +394,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('delegation')}</label>
-                        <select value={toDelegation} onChange={e => setToDelegation(e.target.value)} disabled={!toGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-700">
+                        <select value={toDelegation} onChange={e => setToDelegation(e.target.value)} disabled={!toGovernorate} className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1 disabled:bg-gray-100 dark:disabled:bg-gray-700">
                              <option value="">{t('delegation')}</option>
                              {toDelegations.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
@@ -491,13 +490,14 @@ const AppContent: React.FC<{showSplash: boolean, isAdminView: boolean, setIsAdmi
     const { currentUser } = useAppContext();
 
     useEffect(() => {
+        // Automatically switch out of admin view if user logs out or is no longer an admin
         if (currentUser?.role !== UserRole.ADMIN && isAdminView) {
             setIsAdminView(false);
         }
     }, [currentUser, isAdminView, setIsAdminView]);
     
     return (
-         <div className={`min-h-screen font-sans transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'} bg-gray-100 dark:bg-gray-900 transition-colors duration-300`}>
+         <div className={`min-h-screen font-sans transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'} bg-gray-100 dark:bg-gray-900`}>
             <SplashScreen isVisible={showSplash} />
             <Header isAdminView={isAdminView} onToggleAdminView={() => setIsAdminView(!isAdminView)} />
             <MainContent isAdminView={isAdminView} />

@@ -1,4 +1,4 @@
-// FIX: Changed CommonJS 'require' to ES6 'import' to resolve TypeScript error and align with project's module syntax.
+// FIX: Using named imports to resolve module issues when running seed with ts-node in Docker.
 import { PrismaClient, UserRole, TransportType } from '@prisma/client';
 
 const prisma = new PrismaClient();
