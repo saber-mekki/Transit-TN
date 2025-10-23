@@ -381,7 +381,7 @@ const MainContent: React.FC = () => {
     };
     
     const renderMainView = () => {
-        // FIX: Check currentUser role with case-insensitivity.
+        // FIX: Check currentUser role with case-insensitivity. The backend sends uppercase roles.
         if (currentUser?.role.toUpperCase() === UserRole.OPERATOR.toUpperCase()) {
             return <OperatorView />;
         }
@@ -439,20 +439,20 @@ const MainContent: React.FC = () => {
                 {selectedTrip && <TripDetailsModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />}
             </>
         );
-    }
+    };
 
     return (
         <main className="p-4 md:p-6">
-           {isLoading ? (
-             <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
-                {error ? <p className="text-red-500">{error}</p> : <p>Loading initial data...</p>}
-             </div>
-           ) : (
-            renderMainView()
-           )}
+            {isLoading && !error ? (
+                <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
+                    <p>Loading initial data...</p>
+                </div>
+            ) : (
+                renderMainView()
+            )}
         </main>
     );
-}
+};
 
 
 function App() {

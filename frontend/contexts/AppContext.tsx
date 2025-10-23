@@ -147,9 +147,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addTrip = async (tripData: Omit<Trip, 'id'| 'operatorId' | 'operatorName'>) => {
-    // FIX: Corrected role check to be case-insensitive.
+    // FIX: Corrected role check to be case-insensitive. The backend sends uppercase roles.
     if (!currentUser || currentUser.role.toUpperCase() !== UserRole.OPERATOR.toUpperCase()) {
-        console.error("Only operators can add trips.");
+        console.error("Only operators can add trips. Current role:", currentUser?.role);
         return;
     }
 

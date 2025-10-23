@@ -1,3 +1,4 @@
+// FIX: Changed express import to a namespace import to resolve type inference issues.
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';

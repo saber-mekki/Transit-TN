@@ -16,41 +16,33 @@ export const MapView: React.FC<MapViewProps> = ({ trip }) => {
 
     switch (trip.type) {
       case TransportType.LOUAGE:
-        // FIX: Use flat lat/lng from station object
         if (trip.station?.lat && trip.station?.lng) {
           locations.push({ lat: trip.station.lat, lng: trip.station.lng });
         } else {
           const fallbackStation = allStations.find(s => s.city === trip.fromCity);
-          // FIX: Use flat lat/lng from station object
           if (fallbackStation) locations.push({ lat: fallbackStation.lat, lng: fallbackStation.lng });
         }
         break;
       case TransportType.BUS:
-        // FIX: Use flat lat/lng from station object
         if (trip.departureStation?.lat && trip.departureStation?.lng) {
           locations.push({ lat: trip.departureStation.lat, lng: trip.departureStation.lng });
         } else {
           const fallbackStation = allStations.find(s => s.city === trip.fromCity);
-          // FIX: Use flat lat/lng from station object
           if (fallbackStation) locations.push({ lat: fallbackStation.lat, lng: fallbackStation.lng });
         }
-        // FIX: Use flat lat/lng from station object
         if (trip.arrivalStation?.lat && trip.arrivalStation?.lng) {
           locations.push({ lat: trip.arrivalStation.lat, lng: trip.arrivalStation.lng });
         } else {
            const fallbackStation = allStations.find(s => s.city === trip.toCity);
-           // FIX: Use flat lat/lng from station object
            if (fallbackStation) locations.push({ lat: fallbackStation.lat, lng: fallbackStation.lng });
         }
         break;
       case TransportType.TRANSPORTER:
         const fromStation = allStations.find(s => s.city === trip.fromCity);
-        // FIX: Use flat lat/lng from station object
         if (fromStation) locations.push({ lat: fromStation.lat, lng: fromStation.lng });
         
         const toCityGuess = trip.toCity.split(',')[0];
         const toStation = allStations.find(s => toCityGuess.includes(s.city));
-        // FIX: Use flat lat/lng from station object
         if (toStation) locations.push({ lat: toStation.lat, lng: toStation.lng });
         break;
     }

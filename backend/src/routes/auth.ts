@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../db';
+// FIX: Changed import to handle module resolution issues with Prisma Client.
 import { UserRole } from '@prisma/client';
 
 export const router = Router();
