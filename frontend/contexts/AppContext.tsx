@@ -115,14 +115,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const res = await fetch(`${getApiUrl()}/users`);
       if (!res.ok) throw new Error('Failed to fetch users');
       const usersData = await res.json();
-      setAllUsers(usersData);
+      // FIX: The backend sends uppercase roles, but the frontend User type expects lowercase.
+      // Convert roles to lowercase to match the frontend type definition.
+      const formattedUsers = usersData.map((user: any) => ({
+        ...user,
+        role: user.role.toLowerCase(),
+      }));
+      setAllUsers(formattedUsers);
     } catch (err) {
       console.error("Failed to fetch users:", err);
     }
   }, []);
 
   useEffect(() => {
-    if (currentUser?.role.toUpperCase() === UserRole.ADMIN.toUpperCase()) {
+    // FIX: Simplified role check after ensuring currentUser.role is always lowercase.
+    if (currentUser?.role === UserRole.ADMIN) {
       fetchUsers();
     }
   }, [currentUser, fetchUsers]);
@@ -138,6 +145,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         throw new Error(errorData.message || 'Invalid credentials');
     }
     const user = await response.json();
+    // FIX: The backend sends uppercase roles, but the frontend User type expects lowercase.
+    // Convert the role to lowercase to match the frontend type definition.
+    if (user.role) {
+      user.role = user.role.toLowerCase();
+    }
     setCurrentUser(user);
   }, []);
 
@@ -157,6 +169,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         throw new Error(errorData.message || 'Sign up failed');
     }
     const newUser = await response.json();
+    // FIX: The backend sends uppercase roles, but the frontend User type expects lowercase.
+    // Convert the role to lowercase to match the frontend type definition for auto-login.
+    if (newUser.role) {
+      newUser.role = newUser.role.toLowerCase();
+    }
     setCurrentUser(newUser);
   }, []);
 
@@ -171,6 +188,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addTrip = useCallback(async (tripData: Omit<Trip, 'id'| 'operatorId' | 'operatorName'>) => {
     if (!currentUser) return;
+    // FIX: Simplified role check after ensuring currentUser.role is always lowercase.
+    if (currentUser.role !== UserRole.OPERATOR) {
+        console.error("Only operators can add trips. Current role:", currentUser?.role);
+        return;
+    }
     await fetch(`${getApiUrl()}/trips`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -1,4 +1,5 @@
-// FIX: Changed import to handle module resolution issues with Prisma Client.
+// FIX: Use CommonJS require to solve module resolution error with ts-node.
+// FIX: Changed CommonJS 'require' to ES6 'import' for Prisma Client to fix TypeScript error "Cannot find name 'require'" and align with the project's module syntax.
 import { PrismaClient, UserRole, TransportType } from '@prisma/client';
 
 const prisma = new PrismaClient();
