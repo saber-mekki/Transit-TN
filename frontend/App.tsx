@@ -472,23 +472,28 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
 }
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
   const [isAdminView, setIsAdminView] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => { setShowSplash(false); }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
+  
   return (
     <AppProvider>
-        <AppContent showSplash={showSplash} isAdminView={isAdminView} setIsAdminView={setIsAdminView} />
+        <AppContent isAdminView={isAdminView} setIsAdminView={setIsAdminView} />
     </AppProvider>
   );
 }
 
-const AppContent: React.FC<{showSplash: boolean, isAdminView: boolean, setIsAdminView: (isAdmin: boolean) => void}> = ({ showSplash, isAdminView, setIsAdminView }) => {
-    const { currentUser } = useAppContext();
+const AppContent: React.FC<{isAdminView: boolean, setIsAdminView: (isAdmin: boolean) => void}> = ({ isAdminView, setIsAdminView }) => {
+    const { currentUser, isLoading } = useAppContext();
+    const [showSplash, setShowSplash] = useState(true);
+
+    useEffect(() => {
+        // Hide splash screen after data is loaded, with a minimum display time to prevent flashing
+        if (!isLoading) {
+            const timer = setTimeout(() => {
+                setShowSplash(false);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [isLoading]);
 
     useEffect(() => {
         // Automatically switch out of admin view if user logs out or is no longer an admin
@@ -498,11 +503,13 @@ const AppContent: React.FC<{showSplash: boolean, isAdminView: boolean, setIsAdmi
     }, [currentUser, isAdminView, setIsAdminView]);
     
     return (
-         <div className={`min-h-screen font-sans transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'} bg-gray-100 dark:bg-gray-900`}>
+         <>
             <SplashScreen isVisible={showSplash} />
-            <Header isAdminView={isAdminView} onToggleAdminView={() => setIsAdminView(!isAdminView)} />
-            <MainContent isAdminView={isAdminView} />
-        </div>
+            <div className={`min-h-screen font-sans transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'} bg-gray-100 dark:bg-gray-900`}>
+                <Header isAdminView={isAdminView} onToggleAdminView={() => setIsAdminView(!isAdminView)} />
+                <MainContent isAdminView={isAdminView} />
+            </div>
+        </>
     )
 }
 
