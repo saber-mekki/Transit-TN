@@ -58,7 +58,7 @@ declare global {
 const getApiUrl = () => {
     // The backend URL is configured in `frontend/config.js`.
     // It defaults to 'http://localhost:3000' if the config file is missing or the value is not set.
-    const baseUrl = (window.APP_CONFIG?.API_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const baseUrl = (window.APP_CONFIG?.API_URL || 'http://95.217.14.130:3000').replace(/\/$/, '');
     return `${baseUrl}/api`;
 };
 
