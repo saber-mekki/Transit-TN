@@ -1,1 +1,16 @@
-��^�j�W�v+-�����	���rG�~)^D@0t
+# Dépendances locales, elles seront installées dans le conteneur
+node_modules
+
+# Fichiers de variables d'environnement locales
+.env
+
+# Dossier de sortie de la compilation, sera créé dans le conteneur
+dist
+
+# Fichiers liés à Git
+.git
+.gitignore
+
+# Fichiers Docker
+Dockerfile
+docker-compose.yml
