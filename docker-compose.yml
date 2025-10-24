@@ -8,7 +8,7 @@ services:
       POSTGRES_DB: transitdb
     ports:
       # Expose the database on port 5433 on the host to avoid conflicts with local Postgres.
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -20,7 +20,7 @@ services:
   backend:
     build:
       context: ./backend
-    restart: always
+    restart: on-failure
     depends_on:
       db:
         condition: service_healthy
@@ -29,7 +29,14 @@ services:
     environment:
       DATABASE_URL: "postgresql://transituser:transitpassword@db:5432/transitdb"
       PORT: 3000
-    entrypoint: /app/entrypoint.sh
+    # نشغّل المايغرايشن، وبعدها نعمل fallback: server.js ثم main.js
+    command: >
+      sh -lc '
+      npx prisma migrate deploy &&
+      if [ -f dist/server.js ]; then exec node dist/server.js;
+      elif [ -f dist/main.js ]; then exec node dist/main.js;
+      else echo "❌ No dist entry found (server.js/main.js)"; ls -la dist; exit 1; fi'
+
 
 volumes:
   postgres_data:
