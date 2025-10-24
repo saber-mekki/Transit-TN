@@ -47,7 +47,20 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const getApiUrl = () => 'http://localhost:3000/api';
+declare global {
+    interface Window {
+        APP_CONFIG?: {
+            API_URL?: string;
+        }
+    }
+}
+
+const getApiUrl = () => {
+    // The backend URL is configured in `frontend/config.js`.
+    // It defaults to 'http://localhost:3000' if the config file is missing or the value is not set.
+    const baseUrl = (window.APP_CONFIG?.API_URL || 'http://localhost:3000').replace(/\/$/, '');
+    return `${baseUrl}/api`;
+};
 
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
