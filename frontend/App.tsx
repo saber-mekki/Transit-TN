@@ -232,6 +232,26 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         setSearchResults([]);
     }, [activeTab]);
     
+    // FIX: Moved useMemo call before the conditional return to fix React Hook error.
+    const filteredResults = useMemo(() => {
+        return searchResults.filter(trip => {
+            if (maxPrice && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
+                if ('price' in trip && (trip as any).price > Number(maxPrice)) return false;
+            }
+            if (departAfter) {
+                const tripTime = new Date(trip.departureTime);
+                const [hours, minutes] = departAfter.split(':').map(Number);
+                const tripHours = tripTime.getHours();
+                const tripMinutes = tripTime.getMinutes();
+                if (tripHours < hours || (tripHours === hours && tripMinutes < minutes)) return false;
+            }
+            if (minSeats && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
+                if ('availableSeats' in trip && (trip as any).availableSeats < Number(minSeats)) return false;
+            }
+            return true;
+        });
+    }, [searchResults, maxPrice, departAfter, minSeats]);
+
     if (isAdminView) {
         return <AdminDashboard />;
     }
@@ -288,25 +308,6 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         });
         setSearchResults(results);
     };
-
-    const filteredResults = useMemo(() => {
-        return searchResults.filter(trip => {
-            if (maxPrice && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
-                if ('price' in trip && (trip as any).price > Number(maxPrice)) return false;
-            }
-            if (departAfter) {
-                const tripTime = new Date(trip.departureTime);
-                const [hours, minutes] = departAfter.split(':').map(Number);
-                const tripHours = tripTime.getHours();
-                const tripMinutes = tripTime.getMinutes();
-                if (tripHours < hours || (tripHours === hours && tripMinutes < minutes)) return false;
-            }
-            if (minSeats && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
-                if ('availableSeats' in trip && (trip as any).availableSeats < Number(minSeats)) return false;
-            }
-            return true;
-        });
-    }, [searchResults, maxPrice, departAfter, minSeats]);
 
     const clearFilters = () => { setMaxPrice(''); setDepartAfter(''); setMinSeats(''); };
     

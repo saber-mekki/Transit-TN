@@ -117,7 +117,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const usersData = await res.json();
       const formattedUsers = usersData.map((user: any) => ({
         ...user,
-        role: user.role.toLowerCase(),
+        role: typeof user.role === 'string' ? user.role.toLowerCase() : UserRole.USER,
       }));
       setAllUsers(formattedUsers);
     } catch (err) {
@@ -142,10 +142,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         throw new Error(errorData.message || 'Invalid credentials');
     }
     const user = await response.json();
-    // CRITICAL FIX: Ensure role is lowercase for consistent frontend checks
-    if (user.role) {
-      user.role = user.role.toLowerCase();
-    }
+    user.role = typeof user.role === 'string' ? user.role.toLowerCase() : UserRole.USER;
     setCurrentUser(user);
   }, []);
 
@@ -165,10 +162,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         throw new Error(errorData.message || 'Sign up failed');
     }
     const newUser = await response.json();
-    // CRITICAL FIX: Ensure role is lowercase for consistent frontend checks
-    if (newUser.role) {
-      newUser.role = newUser.role.toLowerCase();
-    }
+    newUser.role = typeof newUser.role === 'string' ? newUser.role.toLowerCase() : UserRole.USER;
     setCurrentUser(newUser);
   }, []);
 
