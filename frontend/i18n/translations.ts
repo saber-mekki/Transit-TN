@@ -113,6 +113,11 @@ export const translations: Translations = {
     longitude: 'خط الطول',
     addStation: 'أضف محطة',
     editStation: 'تعديل المحطة',
+    createdBy: 'تم إنشاؤه بواسطة',
+    about: 'حول',
+    aboutDigithage: 'حول ديجيتاج',
+    digithageDescription: 'ديجيتاج هي شركة تكنولوجيا معلومات متخصصة في تطوير تطبيقات الويب والجوال للشركات.',
+    phone: 'الهاتف',
   },
   fr: {
     appName: 'Transit TN',
@@ -226,6 +231,11 @@ export const translations: Translations = {
     longitude: 'Longitude',
     addStation: 'Ajouter une station',
     editStation: 'Modifier la station',
+    createdBy: 'Créé par',
+    about: 'À propos',
+    aboutDigithage: 'À propos de Digithage',
+    digithageDescription: 'Digithage est une société informatique spécialisée dans le développement d\'applications web et mobiles pour les entreprises.',
+    phone: 'Téléphone',
   },
   en: {
     appName: 'Transit TN',
@@ -339,5 +349,10 @@ export const translations: Translations = {
     longitude: 'Longitude',
     addStation: 'Add Station',
     editStation: 'Edit Station',
+    createdBy: 'Created by',
+    about: 'About',
+    aboutDigithage: 'About Digithage',
+    digithageDescription: 'Digithage is an IT company specializing in the development of web and mobile applications for businesses.',
+    phone: 'Phone',
   }
 };

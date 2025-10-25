@@ -79,7 +79,8 @@ export const StationsPanel: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {allStations.map(station => (
+                            {/* FIX: Explicitly typed the 'station' parameter to resolve type errors. */}
+                            {allStations.map((station: Station) => (
                                 <tr key={station.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{station.name}</td>
                                     <td className="px-6 py-4">{station.city}</td>

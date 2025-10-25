@@ -12,6 +12,8 @@ import { SplashScreen } from './components/SplashScreen';
 import { Logo } from './components/icons/Logo';
 import { LiveBusMap } from './components/LiveBusMap';
 import { AdminDashboard } from './components/AdminDashboard';
+import { Footer } from './components/Footer';
+import { AboutModal } from './components/AboutModal';
 
 
 const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }> = ({ isAdminView, onToggleAdminView }) => {
@@ -232,7 +234,6 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         setSearchResults([]);
     }, [activeTab]);
     
-    // FIX: Moved useMemo call before the conditional return to fix React Hook error.
     const filteredResults = useMemo(() => {
         return searchResults.filter(trip => {
             if (maxPrice && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
@@ -320,15 +321,22 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         }
     };
 
-    const TabButton = ({ type, label, icon }: { type: TransportType | 'live'; label: string; icon: string; }) => (
-        <button
-            onClick={() => setActiveTab(type)}
-            className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-indigo-500 ${ activeTab === type ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-gray-600' }`}
-        >
-            <i className={`fas ${icon} text-2xl mb-2 ${activeTab === type ? 'text-white' : 'text-indigo-500 dark:text-indigo-400'}`}></i>
-            <span className={`text-xs font-bold uppercase tracking-wider ${activeTab === type ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{label}</span>
-        </button>
-    );
+    const TabButton = ({ type, label, icon }: { type: TransportType | 'live'; label: string; icon: string; }) => {
+        const isActive = activeTab === type;
+        return (
+            <button
+                onClick={() => setActiveTab(type)}
+                className={`flex h-20 flex-col items-center justify-center p-2 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-indigo-500 ${
+                    isActive
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg'
+                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-gray-600'
+                }`}
+            >
+                <i className={`fas ${icon} text-2xl mb-1 ${isActive ? 'text-white' : 'text-indigo-500 dark:text-indigo-400'}`}></i>
+                <span className={`text-xs font-bold text-center ${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{label}</span>
+            </button>
+        );
+    };
 
     const renderSearchForm = () => {
         if (activeTab === TransportType.TRANSPORTER) {
@@ -406,7 +414,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
     };
 
     return (
-        <main className="p-4 md:p-6">
+        <div className="p-4 md:p-6">
             {currentUser?.role === UserRole.OPERATOR ? (
                  <OperatorView />
             ) : (
@@ -467,7 +475,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
             )}
 
             {selectedTrip && <TripDetailsModal trip={selectedTrip} onClose={() => setSelectedTrip(null)} />}
-        </main>
+        </div>
     );
 }
 
@@ -484,6 +492,7 @@ function App() {
 const AppContent: React.FC<{isAdminView: boolean, setIsAdminView: (isAdmin: boolean) => void}> = ({ isAdminView, setIsAdminView }) => {
     const { currentUser, isLoading } = useAppContext();
     const [showSplash, setShowSplash] = useState(true);
+    const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
     useEffect(() => {
         // Hide splash screen after data is loaded, with a minimum display time to prevent flashing
@@ -505,10 +514,14 @@ const AppContent: React.FC<{isAdminView: boolean, setIsAdminView: (isAdmin: bool
     return (
          <>
             <SplashScreen isVisible={showSplash} />
-            <div className={`min-h-screen font-sans transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'} bg-gray-100 dark:bg-gray-900`}>
+            <div className={`min-h-screen font-sans transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'} bg-gray-100 dark:bg-gray-900 flex flex-col`}>
                 <Header isAdminView={isAdminView} onToggleAdminView={() => setIsAdminView(!isAdminView)} />
-                <MainContent isAdminView={isAdminView} />
+                <main className="flex-grow">
+                    <MainContent isAdminView={isAdminView} />
+                </main>
+                <Footer onAboutClick={() => setIsAboutModalOpen(true)} />
             </div>
+            <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
         </>
     )
 }
