@@ -52,6 +52,20 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    // Username validation (must be email or phone)
+    const { username } = formData;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^(?:\+216)?[24579]\d{7}$/;
+    
+    const isEmail = emailRegex.test(username);
+    const isPhone = phoneRegex.test(username.replace(/\s/g, ''));
+
+    if (!isEmail && !isPhone) {
+      setError(t('invalidEmailOrPhone'));
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       setError(t('passwordsDoNotMatch'));
@@ -64,7 +78,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         return;
     }
 
-    setError('');
     setIsLoading(true);
     try {
       await signUp({
@@ -110,8 +123,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                 <input type="text" name="displayName" value={formData.displayName} onChange={handleInputChange} placeholder={t('displayName')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('username')}</label>
-                <input type="text" name="username" value={formData.username} onChange={handleInputChange} placeholder={t('username')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('usernameSignUpLabel')}</label>
+                <input type="text" name="username" value={formData.username} onChange={handleInputChange} placeholder={t('usernameSignUpLabel')} className="mt-1 block w-full p-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('password')}</label>

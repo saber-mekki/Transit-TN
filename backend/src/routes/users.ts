@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import prisma from '../db';
-import { UserRole } from '@prisma/client';
+// FIX: Using a CJS-compatible import style for Prisma types to resolve module resolution errors.
+import pkg from '@prisma/client';
+const { UserRole } = pkg;
 
 export const router = Router();
 

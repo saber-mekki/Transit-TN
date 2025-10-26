@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Using named import to handle module resolution issues with Prisma Client.
-import { TransportType } from '@prisma/client';
+// FIX: Using a CJS-compatible import style for Prisma types to resolve module resolution errors.
+import pkg from '@prisma/client';
+const { TransportType } = pkg;
 
 export const router = Router();
 

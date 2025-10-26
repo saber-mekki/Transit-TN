@@ -38,7 +38,7 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                 <Logo size="sm" />
                 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex items-center space-x-4">
+                <div className="hidden md:flex items-center gap-x-4">
                     {currentUser?.role === UserRole.ADMIN && (
                         <button onClick={onToggleAdminView} className="bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-sm">
                            <i className={`fas ${isAdminView ? 'fa-arrow-left' : 'fa-user-shield'} mr-2`}></i>
@@ -46,14 +46,14 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                         </button>
                     )}
                     {currentUser ? (
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center gap-x-4">
                             <span className="text-gray-700 dark:text-gray-200">{t('welcome').replace('{name}', currentUser.displayName)}</span>
                             <button onClick={logout} className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600 transition-colors text-sm">
                                 {t('logout')}
                             </button>
                         </div>
                     ) : (
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-x-2">
                             <button onClick={() => setAuthModal('login')} className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">
                                 {t('login')}
                             </button>
@@ -62,7 +62,7 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                             </button>
                         </div>
                     )}
-                    <div className="flex items-center space-x-4 ml-2 pl-4 border-l border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-x-4 ml-2 pl-4 border-l rtl:ml-0 rtl:mr-2 rtl:pl-0 rtl:pr-4 rtl:border-l-0 rtl:border-r border-gray-200 dark:border-gray-700">
                         <button
                             onClick={handleThemeToggle}
                             title={t('toggleTheme')}
@@ -71,7 +71,7 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                         >
                             {theme === 'light' ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
                         </button>
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center gap-x-3">
                             <button
                                 onClick={() => setLanguage('ar')}
                                 className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'ar' ? 'opacity-100 scale-110' : 'opacity-60'}`}

@@ -1,5 +1,6 @@
-// FIX: Using named imports to resolve module issues when running seed with ts-node in Docker.
-import { PrismaClient, UserRole, TransportType } from '@prisma/client';
+// FIX: Use a CJS-compatible import for Prisma Client to resolve module resolution errors.
+import pkg from '@prisma/client';
+const { PrismaClient, UserRole, TransportType } = pkg;
 
 const prisma = new PrismaClient();
 
