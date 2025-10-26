@@ -1,30 +1,9 @@
 import { Router } from 'express';
 import prisma from '../db';
-// FIX: Using a CJS-compatible import style for Prisma types to resolve module resolution errors.
-import pkg from '@prisma/client';
-const { UserRole } = pkg;
+// FIX: Using named import to handle module resolution issues with Prisma Client.
+import { UserRole } from '@prisma/client';
 
 export const router = Router();
-
-const normalizeUsername = (username: string): string => {
-    if (!username) return '';
-    const trimmedUsername = username.trim();
-
-    // Normalize email to lowercase
-    if (trimmedUsername.includes('@')) {
-        return trimmedUsername.toLowerCase();
-    }
-
-    // For phone numbers, remove spaces before matching
-    const phoneCandidate = trimmedUsername.replace(/\s/g, '');
-    const phoneMatch = phoneCandidate.match(/^(?:\+216)?([24579]\d{7})$/);
-    if (phoneMatch) {
-        return phoneMatch[1];
-    }
-    
-    return trimmedUsername;
-};
-
 
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
@@ -34,24 +13,9 @@ router.post('/signup', async (req, res) => {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Add validation for username format (must be email or phone)
-    const trimmedUsername = username.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isEmail = emailRegex.test(trimmedUsername);
-    
-    const phoneCandidate = trimmedUsername.replace(/\s/g, '');
-    const phoneMatch = phoneCandidate.match(/^(?:\+216)?([24579]\d{7})$/);
-    const isPhone = !!phoneMatch;
-
-    if (!isEmail && !isPhone) {
-        return res.status(400).json({ message: 'Username must be a valid email or Tunisian phone number.' });
-    }
-
     try {
-        const normalizedUsername = normalizeUsername(username);
-
         const existingUser = await prisma.user.findUnique({
-            where: { username: normalizedUsername },
+            where: { username },
         });
 
         if (existingUser) {
@@ -61,7 +25,7 @@ router.post('/signup', async (req, res) => {
         // In a real app, hash the password before saving!
         const newUser = await prisma.user.create({
             data: {
-                username: normalizedUsername,
+                username,
                 password, // HASH THIS
                 displayName,
                 role: role.toUpperCase() as UserRole,
@@ -86,10 +50,8 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const normalizedUsername = normalizeUsername(username);
-
         const user = await prisma.user.findUnique({
-            where: { username: normalizedUsername },
+            where: { username },
         });
 
         if (!user) {
