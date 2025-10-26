@@ -118,6 +118,10 @@ export const translations: Translations = {
     aboutDigithage: 'حول ديجيتاج',
     digithageDescription: 'ديجيتاج هي شركة تكنولوجيا معلومات متخصصة في تطوير تطبيقات الويب والجوال للشركات.',
     phone: 'الهاتف',
+    cookieConsentTitle: 'نحن نستخدم ملفات تعريف الارتباط',
+    cookieConsentText: 'يستخدم هذا الموقع ملفات تعريف الارتباط لضمان حصولك على أفضل تجربة على موقعنا.',
+    accept: 'قبول',
+    decline: 'رفض',
   },
   fr: {
     appName: 'Transit TN',
@@ -236,6 +240,10 @@ export const translations: Translations = {
     aboutDigithage: 'À propos de Digithage',
     digithageDescription: 'Digithage est une société informatique spécialisée dans le développement d\'applications web et mobiles pour les entreprises.',
     phone: 'Téléphone',
+    cookieConsentTitle: 'Nous utilisons des cookies',
+    cookieConsentText: 'Ce site web utilise des cookies pour vous garantir la meilleure expérience sur notre site.',
+    accept: 'Accepter',
+    decline: 'Refuser',
   },
   en: {
     appName: 'Transit TN',
@@ -354,5 +362,9 @@ export const translations: Translations = {
     aboutDigithage: 'About Digithage',
     digithageDescription: 'Digithage is an IT company specializing in the development of web and mobile applications for businesses.',
     phone: 'Phone',
+    cookieConsentTitle: 'We use cookies',
+    cookieConsentText: 'This website uses cookies to ensure you get the best experience on our website.',
+    accept: 'Accept',
+    decline: 'Decline',
   }
 };

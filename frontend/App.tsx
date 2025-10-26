@@ -14,6 +14,7 @@ import { LiveBusMap } from './components/LiveBusMap';
 import { AdminDashboard } from './components/AdminDashboard';
 import { Footer } from './components/Footer';
 import { AboutModal } from './components/AboutModal';
+import { CookieConsent } from './components/CookieConsent';
 
 
 const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }> = ({ isAdminView, onToggleAdminView }) => {
@@ -520,6 +521,7 @@ const AppContent: React.FC<{isAdminView: boolean, setIsAdminView: (isAdmin: bool
                     <MainContent isAdminView={isAdminView} />
                 </main>
                 <Footer onAboutClick={() => setIsAboutModalOpen(true)} />
+                <CookieConsent />
             </div>
             <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
         </>
