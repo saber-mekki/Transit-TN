@@ -36,13 +36,8 @@ async function main() {
   await prisma.trip.deleteMany();
   await prisma.user.deleteMany();
 
-  const op1 = await prisma.user.create({ data: { username: 'ali', password: 'password123', role: UserRole.OPERATOR, displayName: "Ali's Louage" } });
-  const op2 = await prisma.user.create({ data: { username: 'fatma', password: 'password123', role: UserRole.OPERATOR, displayName: 'Fatma Express' } });
-  const sntri = await prisma.user.create({ data: { username: 'sntri_operator', password: 'password123', role: UserRole.OPERATOR, displayName: 'SNTRI' } });
-  const trans1 = await prisma.user.create({ data: { username: 'eurotrans', password: 'password123', role: UserRole.OPERATOR, displayName: 'Euro-Trans' } });
-  const trans2 = await prisma.user.create({ data: { username: 'medcargo', password: 'password123', role: UserRole.OPERATOR, displayName: 'Med Cargo' } });
-  await prisma.user.create({ data: { username: 'user', password: 'password123', role: UserRole.USER, displayName: 'Regular User' } });
-  await prisma.user.create({ data: { username: 'admin', password: 'password123', role: UserRole.ADMIN, displayName: 'Admin' } });
+
+  await prisma.user.create({ data: { username: 'admin', password: 'password123!123', role: UserRole.ADMIN, displayName: 'Admin' } });
   console.log('Seeded users');
 
   // --- SEED TRIPS ---
