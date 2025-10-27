@@ -43,158 +43,158 @@ async function main() {
   // --- SEED TRIPS ---
 
   // LOUAGES
-  await prisma.trip.create({
-    data: {
-      type: TransportType.LOUAGE,
-      operatorId: op1.id,
-      operatorName: op1.displayName,
-      fromCity: 'Tunis',
-      toCity: 'Sousse',
-      departureTime: new Date(Date.now() + 10 * 60 * 1000),
-      arrivalTime: new Date(Date.now() + 130 * 60 * 1000),
-      louageTrip: {
-        create: {
-          stationId: createdStations.tunisMoncefBey.id,
-          price: 15,
-          totalSeats: 8,
-          availableSeats: 3,
-          isFull: false,
-          vehicleNumber: '123 TU 4567',
-          contactInfo: '+216 21 111 222',
-        },
-      },
-    },
-  });
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.LOUAGE,
+  //     operatorId: op1.id,
+  //     operatorName: op1.displayName,
+  //     fromCity: 'Tunis',
+  //     toCity: 'Sousse',
+  //     departureTime: new Date(Date.now() + 10 * 60 * 1000),
+  //     arrivalTime: new Date(Date.now() + 130 * 60 * 1000),
+  //     louageTrip: {
+  //       create: {
+  //         stationId: createdStations.tunisMoncefBey.id,
+  //         price: 15,
+  //         totalSeats: 8,
+  //         availableSeats: 3,
+  //         isFull: false,
+  //         vehicleNumber: '123 TU 4567',
+  //         contactInfo: '+216 21 111 222',
+  //       },
+  //     },
+  //   },
+  // });
 
-  await prisma.trip.create({
-    data: {
-      type: TransportType.LOUAGE,
-      operatorId: op2.id,
-      operatorName: op2.displayName,
-      fromCity: 'Tunis',
-      toCity: 'Sfax',
-      departureTime: new Date(Date.now() + 25 * 60 * 1000),
-      arrivalTime: new Date(Date.now() + 205 * 60 * 1000),
-      louageTrip: {
-        create: {
-          stationId: createdStations.tunisMoncefBey.id,
-          price: 22,
-          totalSeats: 8,
-          availableSeats: 0,
-          isFull: true,
-          contactInfo: '+216 22 333 444',
-        },
-      },
-    },
-  });
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.LOUAGE,
+  //     operatorId: op2.id,
+  //     operatorName: op2.displayName,
+  //     fromCity: 'Tunis',
+  //     toCity: 'Sfax',
+  //     departureTime: new Date(Date.now() + 25 * 60 * 1000),
+  //     arrivalTime: new Date(Date.now() + 205 * 60 * 1000),
+  //     louageTrip: {
+  //       create: {
+  //         stationId: createdStations.tunisMoncefBey.id,
+  //         price: 22,
+  //         totalSeats: 8,
+  //         availableSeats: 0,
+  //         isFull: true,
+  //         contactInfo: '+216 22 333 444',
+  //       },
+  //     },
+  //   },
+  // });
 
-  await prisma.trip.create({
-    data: {
-      type: TransportType.LOUAGE,
-      operatorId: op1.id,
-      operatorName: op1.displayName,
-      fromCity: 'Sousse',
-      toCity: 'Tunis',
-      departureTime: new Date(Date.now() + 45 * 60 * 1000),
-      arrivalTime: new Date(Date.now() + 165 * 60 * 1000),
-      louageTrip: {
-        create: {
-          stationId: createdStations.sousseLouage.id,
-          price: 15,
-          totalSeats: 8,
-          availableSeats: 8,
-          isFull: false,
-          contactInfo: '+216 21 111 222',
-        },
-      },
-    },
-  });
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.LOUAGE,
+  //     operatorId: op1.id,
+  //     operatorName: op1.displayName,
+  //     fromCity: 'Sousse',
+  //     toCity: 'Tunis',
+  //     departureTime: new Date(Date.now() + 45 * 60 * 1000),
+  //     arrivalTime: new Date(Date.now() + 165 * 60 * 1000),
+  //     louageTrip: {
+  //       create: {
+  //         stationId: createdStations.sousseLouage.id,
+  //         price: 15,
+  //         totalSeats: 8,
+  //         availableSeats: 8,
+  //         isFull: false,
+  //         contactInfo: '+216 21 111 222',
+  //       },
+  //     },
+  //   },
+  // });
 
-  // BUSES
-  await prisma.trip.create({
-    data: {
-      type: TransportType.BUS,
-      operatorId: sntri.id,
-      operatorName: sntri.displayName,
-      fromCity: 'Tunis',
-      toCity: 'Sfax',
-      departureTime: new Date(new Date().setHours(8, 0, 0, 0)),
-      arrivalTime: new Date(new Date().setHours(12, 30, 0, 0)),
-      busTrip: {
-        create: {
-          departureStationId: createdStations.tunisMoncefBey.id,
-          arrivalStationId: createdStations.sfaxLouage.id,
-          price: 20,
-          totalSeats: 50,
-          availableSeats: 15,
-        },
-      },
-    },
-  });
+  // // BUSES
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.BUS,
+  //     operatorId: sntri.id,
+  //     operatorName: sntri.displayName,
+  //     fromCity: 'Tunis',
+  //     toCity: 'Sfax',
+  //     departureTime: new Date(new Date().setHours(8, 0, 0, 0)),
+  //     arrivalTime: new Date(new Date().setHours(12, 30, 0, 0)),
+  //     busTrip: {
+  //       create: {
+  //         departureStationId: createdStations.tunisMoncefBey.id,
+  //         arrivalStationId: createdStations.sfaxLouage.id,
+  //         price: 20,
+  //         totalSeats: 50,
+  //         availableSeats: 15,
+  //       },
+  //     },
+  //   },
+  // });
 
-  await prisma.trip.create({
-    data: {
-      type: TransportType.BUS,
-      operatorId: sntri.id,
-      operatorName: sntri.displayName,
-      fromCity: 'Gabès',
-      toCity: 'Sousse',
-      departureTime: new Date(new Date().setHours(10, 0, 0, 0)),
-      arrivalTime: new Date(new Date().setHours(14, 0, 0, 0)),
-      busTrip: {
-        create: {
-          departureStationId: createdStations.gabesLouage.id,
-          arrivalStationId: createdStations.sousseLouage.id,
-          price: 25,
-          totalSeats: 50,
-          availableSeats: 22,
-        },
-      },
-    },
-  });
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.BUS,
+  //     operatorId: sntri.id,
+  //     operatorName: sntri.displayName,
+  //     fromCity: 'Gabès',
+  //     toCity: 'Sousse',
+  //     departureTime: new Date(new Date().setHours(10, 0, 0, 0)),
+  //     arrivalTime: new Date(new Date().setHours(14, 0, 0, 0)),
+  //     busTrip: {
+  //       create: {
+  //         departureStationId: createdStations.gabesLouage.id,
+  //         arrivalStationId: createdStations.sousseLouage.id,
+  //         price: 25,
+  //         totalSeats: 50,
+  //         availableSeats: 22,
+  //       },
+  //     },
+  //   },
+  // });
 
-  // TRANSPORTERS
-  await prisma.trip.create({
-    data: {
-      type: TransportType.TRANSPORTER,
-      operatorId: trans1.id,
-      operatorName: trans1.displayName,
-      fromCity: 'Tunis',
-      toCity: 'Marseille, France',
-      departureTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      arrivalTime: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-      transporterTrip: {
-        create: {
-          contactInfo: '+216 22 123 456',
-          vehicleType: 'Semi-trailer truck',
-          availableSpace: '10 m³',
-          eta: '2 days',
-          route: ['Ben Arous', 'Nabeul'],
-        },
-      },
-    },
-  });
+  // // TRANSPORTERS
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.TRANSPORTER,
+  //     operatorId: trans1.id,
+  //     operatorName: trans1.displayName,
+  //     fromCity: 'Tunis',
+  //     toCity: 'Marseille, France',
+  //     departureTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+  //     arrivalTime: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+  //     transporterTrip: {
+  //       create: {
+  //         contactInfo: '+216 22 123 456',
+  //         vehicleType: 'Semi-trailer truck',
+  //         availableSpace: '10 m³',
+  //         eta: '2 days',
+  //         route: ['Ben Arous', 'Nabeul'],
+  //       },
+  //     },
+  //   },
+  // });
 
-  await prisma.trip.create({
-    data: {
-      type: TransportType.TRANSPORTER,
-      operatorId: trans2.id,
-      operatorName: trans2.displayName,
-      fromCity: 'Sfax',
-      toCity: 'Genoa, Italy',
-      departureTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      arrivalTime: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
-      transporterTrip: {
-        create: {
-          contactInfo: 'contact@medcargo.com',
-          vehicleType: 'Refrigerated truck',
-          availableSpace: '5 tons',
-          eta: '3 days',
-          route: ['Mahdia', 'Sousse', 'Nabeul'],
-        },
-      },
-    },
-  });
+  // await prisma.trip.create({
+  //   data: {
+  //     type: TransportType.TRANSPORTER,
+  //     operatorId: trans2.id,
+  //     operatorName: trans2.displayName,
+  //     fromCity: 'Sfax',
+  //     toCity: 'Genoa, Italy',
+  //     departureTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+  //     arrivalTime: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
+  //     transporterTrip: {
+  //       create: {
+  //         contactInfo: 'contact@medcargo.com',
+  //         vehicleType: 'Refrigerated truck',
+  //         availableSpace: '5 tons',
+  //         eta: '3 days',
+  //         route: ['Mahdia', 'Sousse', 'Nabeul'],
+  //       },
+  //     },
+  //   },
+  // });
 
   console.log('Seeded trips');
   console.log('Seeding finished.');
