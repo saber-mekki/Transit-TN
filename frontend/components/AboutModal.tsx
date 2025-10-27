@@ -30,8 +30,8 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
                     </a>
                 </div>
                  <div className="flex items-center">
-                    <i className="fas fa-phone-alt w-5 mr-3 rtl:mr-0 rtl:ml-3 text-gray-400"></i>
-                    <a href="tel:+14915756380335" className="text-blue-500 hover:underline">
+                    <i className="fab fa-whatsapp w-5 mr-3 rtl:mr-0 rtl:ml-3 text-gray-400"></i>
+                    <a href="https://wa.me/14915756380335" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                         +14915756380335
                     </a>
                 </div>
