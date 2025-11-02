@@ -15,6 +15,8 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { Footer } from './components/Footer';
 import { AboutModal } from './components/AboutModal';
 import { CookieConsent } from './components/CookieConsent';
+import { Chatbot } from './components/AiAssistant';
+import { AiTourGuide } from './components/AiTourGuide';
 
 
 const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }> = ({ isAdminView, onToggleAdminView }) => {
@@ -184,8 +186,8 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
 const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
     const { t } = useI18n();
     const { trips, currentUser, locations, isLoading, error } = useAppContext();
-    const [activeTab, setActiveTab] = useState<TransportType | 'live'>(TransportType.LOUAGE);
-    const [searchResults, setSearchResults] = useState<Trip[]>([]);
+    const [activeTab, setActiveTab] = useState<TransportType | 'live' | 'tour'>(TransportType.LOUAGE);
+    const [displayResults, setDisplayResults] = useState<Trip[] | null>(null);
     const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
 
     // Domestic search state
@@ -200,7 +202,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
     const [transporterLocA, setTransporterLocA] = useState('');
     const [transporterLocB, setTransporterLocB] = useState('');
 
-    // Filter state
+    // Filter state for manual search
     const [maxPrice, setMaxPrice] = useState('');
     const [departAfter, setDepartAfter] = useState('');
     const [minSeats, setMinSeats] = useState('');
@@ -228,15 +230,17 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
     }, [toGovernorate, tunisianGovernorates]);
     
     useEffect(() => {
-        // Clear location state when changing tabs
+        // Clear state when changing tabs
         setFromGovernorate(''); setFromDelegation('');
         setToGovernorate(''); setToDelegation('');
         setTransporterLocA(''); setTransporterLocB('');
-        setSearchResults([]);
+        setDisplayResults(null);
+        clearFilters();
     }, [activeTab]);
     
-    const filteredResults = useMemo(() => {
-        return searchResults.filter(trip => {
+    const filteredManualResults = useMemo(() => {
+        if (displayResults === null) return [];
+        return displayResults.filter(trip => {
             if (maxPrice && (trip.type === TransportType.LOUAGE || trip.type === TransportType.BUS)) {
                 if ('price' in trip && (trip as any).price > Number(maxPrice)) return false;
             }
@@ -252,7 +256,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
             }
             return true;
         });
-    }, [searchResults, maxPrice, departAfter, minSeats]);
+    }, [displayResults, maxPrice, departAfter, minSeats]);
 
     if (isAdminView) {
         return <AdminDashboard />;
@@ -260,7 +264,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
 
     const handleSearch = () => {
         const results = trips.filter(trip => {
-            if (activeTab === 'live') return false;
+            if (activeTab === 'live' || activeTab === 'tour') return false;
 
             const typeMatch = trip.type === activeTab;
             if (!typeMatch) return false;
@@ -308,7 +312,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
                 return fromMatch && toMatch;
             }
         });
-        setSearchResults(results);
+        setDisplayResults(results);
     };
 
     const clearFilters = () => { setMaxPrice(''); setDepartAfter(''); setMinSeats(''); };
@@ -322,7 +326,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         }
     };
 
-    const TabButton = ({ type, label, icon }: { type: TransportType | 'live'; label: string; icon: string; }) => {
+    const TabButton = ({ type, label, icon }: { type: TransportType | 'live' | 'tour'; label: string; icon: string; }) => {
         const isActive = activeTab === type;
         return (
             <button
@@ -414,6 +418,15 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
         );
     };
 
+    const renderResults = () => {
+        if (isLoading) return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p>;
+        if (error) return <p className="text-center text-red-500 mt-8">{error}</p>;
+        if (displayResults === null) return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Please start a search to see trips.</p>;
+        if (filteredManualResults.length > 0) return filteredManualResults.map(trip => <TripCard key={trip.id} trip={trip} onSelect={setSelectedTrip} />);
+        return <p className="text-center text-gray-500 dark:text-gray-400 mt-8">{t('noResults')}</p>;
+    }
+
+
     return (
         <div className="p-4 md:p-6">
             {currentUser?.role === UserRole.OPERATOR ? (
@@ -421,14 +434,16 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
             ) : (
                 <>
                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                        <div className="grid grid-cols-4 gap-4 mb-4">
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 md:gap-4 mb-4">
                             <TabButton type={TransportType.LOUAGE} label={t('louage')} icon="fa-car-side" />
                             <TabButton type={TransportType.BUS} label={t('bus')} icon="fa-bus" />
                             <TabButton type={TransportType.TRANSPORTER} label={t('transporter')} icon="fa-truck-moving" />
                             <TabButton type={'live'} label={t('liveMap')} icon="fa-map-marked-alt" />
+                            <TabButton type={'tour'} label={t('aiTourGuide')} icon="fa-compass" />
                         </div>
                         
-                        {activeTab !== 'live' ? (
+                        {activeTab === 'tour' ? ( <AiTourGuide /> )
+                        : activeTab !== 'live' ? (
                             <>
                                 {renderSearchForm()}
                                 <button onClick={handleSearch} className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition-colors">{t('findTrips')}</button>
@@ -436,7 +451,7 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
                         ) : ( <LiveBusMap /> )}
                     </div>
 
-                    {activeTab !== 'live' && searchResults.length > 0 && (
+                    {activeTab !== 'live' && activeTab !== 'tour' && displayResults !== null && (
                         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mt-6">
                             <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">{t('filters')}</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
@@ -461,15 +476,9 @@ const MainContent: React.FC<{ isAdminView: boolean; }> = ({ isAdminView }) => {
                         </div>
                     )}
 
-                    {activeTab !== 'live' && (
+                    {activeTab !== 'live' && activeTab !== 'tour' && (
                          <div className="mt-6">
-                            {isLoading ? (<p className="text-center text-gray-500 dark:text-gray-400 mt-8">Loading trips...</p>) 
-                            : error ? (<p className="text-center text-red-500 mt-8">{error}</p>) 
-                            : searchResults.length > 0 ? (
-                                filteredResults.length > 0 ? (
-                                    filteredResults.map(trip => ( <TripCard key={trip.id} trip={trip} onSelect={setSelectedTrip} /> ))
-                                ) : ( <p className="text-center text-gray-500 dark:text-gray-400 mt-8">{t('noResults')}</p> )
-                            ) : ( <p className="text-center text-gray-500 dark:text-gray-400 mt-8">Please start a search to see trips.</p> )}
+                            {renderResults()}
                         </div>
                     )}
                 </>
@@ -522,6 +531,7 @@ const AppContent: React.FC<{isAdminView: boolean, setIsAdminView: (isAdmin: bool
                 </main>
                 <Footer onAboutClick={() => setIsAboutModalOpen(true)} />
                 <CookieConsent />
+                <Chatbot />
             </div>
             <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
         </>
