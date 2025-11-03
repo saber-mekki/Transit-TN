@@ -4,6 +4,22 @@ Transit TN is a full-stack web application designed to streamline transit inform
 
 This application is built with a modern, scalable architecture, featuring a React frontend, a Node.js backend, and a PostgreSQL database, all containerized with Docker for easy setup and deployment.
 
+## ✨ AI-Powered Features
+
+This application leverages the power of Google's Gemini models to provide an intelligent and intuitive user experience.
+
+### 🤖 AI Chatbot for Trip Finding
+
+-   **Natural Language Search**: Users can interact with an AI-powered chatbot to find trips. Instead of filling out forms, they can simply type what they're looking for, e.g., "I want to go from Tunis to Sfax this evening."
+-   **Intelligent Parsing**: The chatbot uses the `gemini-2.5-flash` model with a defined JSON schema to accurately parse the user's intent, extracting details like origin, destination, and transport type.
+-   **Conversational Feedback**: The chatbot provides a friendly, conversational response before showing the search results, enhancing user engagement.
+
+### 🧭 AI Tour Guide for Itinerary Planning
+
+-   **Custom Travel Plans**: A sophisticated AI Tour Guide helps users plan their adventures in Tunisia. Users can make complex requests like, "Plan a 3-day trip for me to see the sea and the sahara."
+-   **Detailed Itineraries**: Powered by the `gemini-2.5-pro` model, the tour guide generates detailed itineraries that include suggestions for places to visit, activities, local cuisine, and travel routes.
+-   **Multi-lingual Support**: Both AI features are designed to understand and respond in the user's selected language (Arabic, French, or English).
+
 ## Tech Stack
 
 - **Frontend**:
@@ -11,6 +27,7 @@ This application is built with a modern, scalable architecture, featuring a Reac
   - TypeScript
   - Tailwind CSS for styling
   - Leaflet.js for interactive maps
+  - Google Gemini API (`@google/genai`) for AI features
 
 - **Backend**:
   - Node.js with Express.js

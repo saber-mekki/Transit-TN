@@ -4,6 +4,7 @@
 // API_URL: 'https://api.yourdomain.com'
 
 window.APP_CONFIG = {
-    API_URL: 'http://95.217.14.130/:3000'
+    API_URL: 'http://95.217.14.130/:3000',
+      GEMINI_API_KEY: '',
   };
   

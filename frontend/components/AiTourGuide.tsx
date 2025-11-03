@@ -28,9 +28,13 @@ export const AiTourGuide: React.FC = () => {
         setHistory(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
-
+//window.APP_CONFIG?.GEMINI_API_KEY
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+            const apiKey = "AIzaSyA6fvy79JhyJZGx2O-Sk-FulfG_QoIeqx4";
+            if (!apiKey) {
+                throw new Error("An API Key must be set. It is missing from the application configuration.");
+            }
+            const ai = new GoogleGenAI({ apiKey });
             
             const langMap = { ar: 'Arabic', fr: 'French', en: 'English' };
             const currentLang = langMap[language] || 'English';

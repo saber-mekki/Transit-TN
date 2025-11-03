@@ -44,16 +44,27 @@ export const Chatbot: React.FC = () => {
         setHistory(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
-
+//window.APP_CONFIG?.GEMINI_API_KEY
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+            const apiKey = "AIzaSyA6fvy79JhyJZGx2O-Sk-FulfG_QoIeqx4";
+            if (!apiKey) {
+                throw new Error("An API Key must be set. It is missing from the application configuration.");
+            }
+            const ai = new GoogleGenAI({ apiKey });
+            
             const langMap = { ar: 'Arabic', fr: 'French', en: 'English' };
             const currentLang = langMap[language] || 'English';
+            
+            const systemInstruction = `You are a helpful travel assistant for a Tunisian transit app. Analyze the user's request and extract the origin, destination, and desired mode of transport (louage, bus, or transporter). The user is writing in ${currentLang}. Provide a short, friendly conversational response in the same language.`;
 
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: `You are a helpful travel assistant for a Tunisian transit app. Analyze the user's request and extract the origin, destination, and desired mode of transport (louage, bus, or transporter). The user is writing in ${currentLang}. Provide a short, friendly conversational response in the same language. User's request: "${input}"`,
-                config: { responseMimeType: "application/json", responseSchema: schema },
+                config: {
+                    systemInstruction,
+                    responseMimeType: "application/json",
+                    responseSchema: schema
+                },
             });
 
             const jsonStr = response.text.trim();
