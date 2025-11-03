@@ -1,5 +1,7 @@
-// FIX: Using require-style import for Express to fix type inference issues when esModuleInterop is not enabled.
-import express = require('express');
+
+// FIX: Changed the express import to a default import to resolve type errors with middleware.
+// The namespace import `import * as express from 'express'` can lead to incorrect type inference for the Express app and its methods.
+import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { router as tripRoutes } from './routes/trips';
