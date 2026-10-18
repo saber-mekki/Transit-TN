@@ -19,6 +19,37 @@ import { Chatbot } from './components/AiAssistant';
 import { AiTourGuide } from './components/AiTourGuide';
 
 
+// Text labels instead of flag emojis: Windows renders flags as plain letters ("TN", "FR") that are unreadable in dark mode
+const LANGUAGE_OPTIONS: { code: Language; label: string; title: string }[] = [
+    { code: 'ar', label: 'ع', title: 'العربية' },
+    { code: 'fr', label: 'FR', title: 'Français' },
+    { code: 'en', label: 'EN', title: 'English' },
+];
+
+const LanguageSwitcher: React.FC<{ onSelect?: () => void }> = ({ onSelect }) => {
+    const { language, setLanguage } = useAppContext();
+    return (
+        <div className="flex items-center gap-x-1 rounded-full bg-gray-100 dark:bg-gray-700 p-1">
+            {LANGUAGE_OPTIONS.map(({ code, label, title }) => (
+                <button
+                    key={code}
+                    onClick={() => { setLanguage(code); onSelect?.(); }}
+                    title={title}
+                    aria-label={title}
+                    aria-pressed={language === code}
+                    className={`min-w-[2.25rem] px-2 py-1 rounded-full text-sm font-bold transition-colors duration-200 ${
+                        language === code
+                            ? 'bg-indigo-600 text-white shadow'
+                            : 'text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                >
+                    {label}
+                </button>
+            ))}
+        </div>
+    );
+};
+
 const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }> = ({ isAdminView, onToggleAdminView }) => {
     const { t, language } = useI18n();
     const { setLanguage, currentUser, logout, theme, setTheme } = useAppContext();
@@ -73,29 +104,7 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                         >
                             {theme === 'light' ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
                         </button>
-                        <div className="flex items-center gap-x-3">
-                            <button
-                                onClick={() => setLanguage('ar')}
-                                className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'ar' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                                title="العربية"
-                            >
-                                🇹🇳
-                            </button>
-                            <button
-                                onClick={() => setLanguage('fr')}
-                                className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'fr' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                                title="Français"
-                            >
-                                🇫🇷
-                            </button>
-                            <button
-                                onClick={() => setLanguage('en')}
-                                className={`text-2xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'en' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                                title="English"
-                            >
-                                🇬🇧
-                            </button>
-                        </div>
+                        <LanguageSwitcher />
                     </div>
                 </div>
 
@@ -143,27 +152,7 @@ const Header: React.FC<{ isAdminView: boolean; onToggleAdminView: () => void; }>
                                 >
                                     {theme === 'light' ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
                                 </button>
-                                <button
-                                    onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }}
-                                    className={`text-3xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'ar' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                                    title="العربية"
-                                >
-                                    🇹🇳
-                                </button>
-                                <button
-                                    onClick={() => { setLanguage('fr'); setIsMenuOpen(false); }}
-                                    className={`text-3xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'fr' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                                    title="Français"
-                                >
-                                    🇫🇷
-                                </button>
-                                <button
-                                    onClick={() => { setLanguage('en'); setIsMenuOpen(false); }}
-                                    className={`text-3xl transition-all duration-200 ease-in-out hover:scale-125 ${language === 'en' ? 'opacity-100 scale-110' : 'opacity-60'}`}
-                                    title="English"
-                                >
-                                    🇬🇧
-                                </button>
+                                <LanguageSwitcher onSelect={() => setIsMenuOpen(false)} />
                             </div>
                         </div>
                     </div>

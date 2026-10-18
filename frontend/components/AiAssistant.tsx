@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { useAppContext } from '../contexts/AppContext';
 import { useI18n } from '../hooks/useI18n';
-import type { Trip } from '../types';
+import type { Trip, Language } from '../types';
 
 const schema = {
   type: Type.OBJECT,
@@ -17,6 +17,34 @@ const schema = {
   },
   propertyOrdering: ["conversationalResponse", "fromCity", "toCity", "transportType"],
 };
+
+// Default questions shown before the conversation starts (clicking one sends it)
+const SUGGESTED_QUESTIONS: Record<Language, string[]> = {
+    ar: [
+        'أريد لواج من تونس إلى صفاقس اليوم',
+        'هل يوجد لواج من قبلي إلى تونس؟',
+        'أريد حافلة من القصرين إلى تونس',
+        'أبحث عن ناقل لإرسال بضاعة إلى فرنسا',
+    ],
+    fr: [
+        'Je cherche un louage de Tunis à Sfax aujourd\'hui',
+        'Y a-t-il un louage de Kébili à Tunis ?',
+        'Je veux un bus de Kasserine à Tunis',
+        'Je cherche un transporteur pour envoyer un colis en France',
+    ],
+    en: [
+        'I need a louage from Tunis to Sfax today',
+        'Is there a louage from Kébili to Tunis?',
+        'I want a bus from Kasserine to Tunis',
+        'I\'m looking for a transporter to send a parcel to France',
+    ],
+};
+
+const BotAvatar: React.FC = () => (
+    <span className="flex-shrink-0 w-8 h-8 mb-1 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm shadow">
+        <i className="fas fa-compass"></i>
+    </span>
+);
 
 export const Chatbot: React.FC = () => {
     const { t, language } = useI18n();
@@ -37,10 +65,11 @@ export const Chatbot: React.FC = () => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [history]);
 
-    const handleSendMessage = async () => {
-        if (!input.trim()) return;
+    const handleSendMessage = async (suggestion?: string) => {
+        const text = (suggestion ?? input).trim();
+        if (!text || isLoading) return;
 
-        const userMessage = { role: 'user' as const, text: input };
+        const userMessage = { role: 'user' as const, text };
         setHistory(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
@@ -59,7 +88,7 @@ export const Chatbot: React.FC = () => {
 
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: `You are a helpful travel assistant for a Tunisian transit app. Analyze the user's request and extract the origin, destination, and desired mode of transport (louage, bus, or transporter). The user is writing in ${currentLang}. Provide a short, friendly conversational response in the same language. User's request: "${input}"`,
+                contents: `You are a helpful travel assistant for a Tunisian transit app. Analyze the user's request and extract the origin, destination, and desired mode of transport (louage, bus, or transporter). The user is writing in ${currentLang}. Provide a short, friendly conversational response in the same language. User's request: "${text}"`,
                 config: {
                     systemInstruction,
                     responseMimeType: "application/json",
@@ -144,7 +173,7 @@ export const Chatbot: React.FC = () => {
                 aria-label={t('chatbot')}
                 className="fixed bottom-6 right-6 z-40 w-16 h-16 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-                <i className="fas fa-robot text-2xl"></i>
+                <i className="fas fa-comment-dots text-2xl"></i>
             </button>
         );
     }
@@ -153,14 +182,17 @@ export const Chatbot: React.FC = () => {
         <div className="fixed bottom-6 right-6 z-40 w-full max-w-sm h-[65vh] max-h-[40rem] bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col border border-gray-200 dark:border-gray-700">
             <header className="flex-shrink-0 p-3 flex justify-between items-center bg-indigo-600 text-white rounded-t-xl">
                 <h3 className="font-bold text-lg flex items-center gap-2">
-                    <i className="fas fa-robot"></i> {t('chatbot')}
+                    <span className="w-8 h-8 rounded-full bg-white text-indigo-600 flex items-center justify-center text-base">
+                        <i className="fas fa-compass"></i>
+                    </span>
+                    {t('chatbot')}
                 </h3>
                 <button onClick={() => setIsOpen(false)} className="text-2xl hover:opacity-80">&times;</button>
             </header>
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
                 {history.map((msg, index) => (
                     <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {msg.role === 'model' && <i className="fas fa-robot text-indigo-400 mb-2"></i>}
+                        {msg.role === 'model' && <BotAvatar />}
                         <div className={`p-3 rounded-lg max-w-xs shadow-sm whitespace-pre-wrap ${
                             msg.role === 'user' ? 'bg-indigo-500 text-white rounded-br-none' : 
                             msg.role === 'system' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 text-center w-full text-sm' :
@@ -170,9 +202,23 @@ export const Chatbot: React.FC = () => {
                         </div>
                     </div>
                 ))}
+                {!history.some(msg => msg.role === 'user') && (
+                    <div className="flex flex-col gap-2">
+                        {SUGGESTED_QUESTIONS[language].map(question => (
+                            <button
+                                key={question}
+                                type="button"
+                                onClick={() => handleSendMessage(question)}
+                                className="text-start text-sm px-3 py-2 rounded-lg border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-200 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors"
+                            >
+                                {question}
+                            </button>
+                        ))}
+                    </div>
+                )}
                 {isLoading && (
                     <div className="flex items-end gap-2 justify-start">
-                        <i className="fas fa-robot text-indigo-400 mb-2"></i>
+                        <BotAvatar />
                         <div className="p-3 rounded-lg bg-gray-200 dark:bg-gray-700 rounded-bl-none">
                              <div className="flex items-center space-x-1">
                                 <span className="h-2 w-2 bg-gray-500 rounded-full animate-pulse [animation-delay:-0.3s]"></span>

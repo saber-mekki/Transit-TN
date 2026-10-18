@@ -88,7 +88,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       });
       onClose(); // Close modal on successful sign-up
     } catch (err: any) {
-        if (err.message === 'Username already exists') {
+        if (err.message === 'Username already exists' || err.message === 'Email already in use') {
             setError(t('usernameExists'));
         } else {
             setError('An unknown error occurred.');
