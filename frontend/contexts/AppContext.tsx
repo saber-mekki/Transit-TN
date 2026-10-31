@@ -37,6 +37,8 @@ interface AppContextType {
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   signUp: (data: SignUpData) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
+  resetPassword: (email: string, code: string, newPassword: string) => Promise<void>;
   trips: Trip[];
   updateTrip: (updatedTrip: Trip) => Promise<void>;
   addTrip: (
@@ -262,6 +264,35 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     setCurrentUser(handleAuthResponse(await response.json()));
   }, []);
 
+  // Step 1 of password reset: the backend emails a 6-digit code
+  const requestPasswordReset = useCallback(async (email: string): Promise<void> => {
+    const response = await fetch(`${getApiUrl()}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to send reset code");
+    }
+  }, []);
+
+  // Step 2 of password reset: the emailed code authorizes the new password
+  const resetPassword = useCallback(
+    async (email: string, code: string, newPassword: string): Promise<void> => {
+      const response = await fetch(`${getApiUrl()}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code, newPassword }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Password reset failed");
+      }
+    },
+    [],
+  );
+
   const updateTrip = useCallback(
     async (updatedTrip: Trip) => {
       await authFetch(`${getApiUrl()}/trips/${updatedTrip.id}`, {
@@ -362,6 +393,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     login,
     logout,
     signUp,
+    requestPasswordReset,
+    resetPassword,
     trips,
     updateTrip,
     addTrip,
